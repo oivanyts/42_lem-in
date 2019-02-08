@@ -43,6 +43,7 @@ FUNCTIONS 	+= ft_lstdelone.c
 FUNCTIONS 	+= ft_lstiter.c
 FUNCTIONS 	+= ft_lstmap.c
 FUNCTIONS 	+= ft_lstnew.c
+FUNCTIONS 	+= ft_lstaddback.c
 FUNCTIONS 	+= ft_matrixalloc.c
 FUNCTIONS 	+= ft_memalloc.c
 FUNCTIONS 	+= ft_memccpy.c

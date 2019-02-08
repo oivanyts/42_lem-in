@@ -37,6 +37,5 @@ void		**ft_matrixalloc(size_t width, size_t length, size_t buf)
 		}
 		else
 			row_zero(matrix[n++], length);
-
 	return (matrix);
 }
