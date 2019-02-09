@@ -92,6 +92,7 @@ FUNCTIONS 	+= ft_tolower.c
 FUNCTIONS 	+= ft_toupper.c
 FUNCTIONS 	+= get_next_line.c
 FUNCTIONS 	+= ft_num_size.c
+FUNCTIONS 	+= ft_lstaddhere.c
 
 OBJ 		= $(addprefix $(OBJ_DIR), $(FUNCTIONS:.c=.o))
 

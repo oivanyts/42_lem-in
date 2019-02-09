@@ -23,19 +23,13 @@ typedef struct			s_point{
 	int 				y;
 } 						t_cord;
 
-typedef struct			s_strlink
-{
-	void				*str;
-	struct s_strlink	*next;
-}						t_strlink;
-
-struct					s_Vertex
+typedef struct			s_Vertex
 {
 	char 				*Name;
-	int					Links;
 	int 				Distance;
+	int					Links;
 	int					*Neighbor;
-};
+}						t_Vertex;
 
 struct					s_Graph
 {

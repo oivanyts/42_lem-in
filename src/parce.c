@@ -12,64 +12,54 @@
 
 #include "lem-in.h"
 
-bool    comand(char *str, char **start, char **end)
+t_Vertex	*newVertex(char *str)
+{
+	t_Vertex	*New;
+
+	if (!(New = (t_Vertex *)malloc(sizeof(t_Vertex))))
+		return (NULL);
+	New->Name = str;
+	return (New);
+}
+
+bool    comand(char *str, t_list **rooms)
 {
 	if (!ft_strncmp(&str[2], "start", 5))
 	{
 		free(str);
 		if (get_next_line(fd, &str) == -1)
 			ERROR;
-		*start = str;
+		ft_lstadd(rooms, ft_lstnew(newVertex(str), sizeof(t_Vertex *)));
 	}
 	else if (!ft_strncmp(&str[2], "end", 3))
 	{
 		free(str);
 		if (get_next_line(fd, &str) == -1)
 			ERROR;
-		*end = str;
+		ft_lstaddback(rooms, ft_lstnew(newVertex(str), sizeof(t_Vertex *)));
 	}
 	return (1);
 }
 
-
-
-
-t_strlink	*add_link(char *string, t_strlink *list)
-{
-	t_strlink	*new;
-	if (!(new = (t_strlink *)malloc(sizeof(t_strlink))))
-		return (NULL);
-	new->next = NULL;
-	new->str = string;
-	list->next = new;
-	return (new);
-}
-
-int    parce(t_strlink	*rooms, t_strlink	*pipes)
+int			parce(t_list *rooms, t_list *pipes)
 {
 	char		*tmp;
-	t_strlink	*crawler1;
-	char		*start;
-	char		*end;
 	int			count_rooms;
+	int			links;
 
+	links = 0;
 	count_rooms = 0;
-	crawler1 = rooms;
 	while (get_next_line(fd, &tmp) > 0)
 	{
 		if (tmp[0] == '#' && tmp[1] == '#' && ++count_rooms)
-			comand(tmp, &start, &end);
+			comand(tmp, &rooms);
 		else if (tmp[0] == '#')
-		{
 			free(tmp);
-			continue ;
-		}
 		else if (tmp[0] != 'L' && ft_strchr(tmp, ' ') && ++count_rooms)
-			crawler1 = add_link(tmp, crawler1);
-		else if (ft_strchr(tmp, '-'))
-			pipes = add_link(tmp, pipes);
+			ft_lstaddhere(&rooms, ft_lstnew(newVertex(tmp), sizeof(t_Vertex *)));
+		else if (ft_strchr(tmp, '-') && ++links)
+			pipes = a(tmp, pipes);
+
 	}
-	add_link(end, crawler1);
-	rooms->str = start;
     return (count_rooms);
 }

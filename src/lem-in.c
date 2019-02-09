@@ -122,51 +122,53 @@ void	print_matr(int **matr, int size)
 
 }
 
-//void	path_finder(int	**matr, int size)
-//{
-//	int i[1000];
-//
-//
-//}
-
-void	ft_for()
-{
-
-}
-
-struct s_Graph	*newGraph(int	size, t_strlink head, t_strlink tail)
+struct s_Graph	*newGraph(int	size)
 {
 	struct s_Graph	*graph;
 
 	graph = (struct s_Graph *)malloc(sizeof(struct s_Graph));
 	graph->V = size;
-
-	graph->array = (struct s_Vertex *)malloc(sizeof(struct s_Vertex) * size);
-	while (size--)
-		graph->array[size].Name = NULL;
+//	graph->array = (struct s_Vertex *)malloc(sizeof(struct s_Vertex) * size);
+//	while (size--)
+//		graph->array[size].Name = NULL;
 	return (graph);
 }
 
+struct s_Graph	*SignGraph(int size, t_strlink *pipes, t_strlink *rooms)
+{
+	struct s_Graph	*graph;
+	int 			i;
+
+	graph = newGraph(size);
+	i = 0;
+	while (i < size)
+	{
+		graph->array[i++].Name = rooms->str;
+		rooms = rooms->next;
+	}
+
+	return (graph);
+}
 
 int main(void)
 {
 	int				ants;
-	t_strlink		*rooms;
-	t_strlink		*pipes;
+	t_list			*rooms;
+	t_list			*pipes;
 	int				**links;
 	int 			size_matr;
-	struct s_Graph	graph;
+	struct s_Graph	*graph;
 
-
-	if(!(rooms = (t_strlink *)malloc(sizeof(t_strlink))))
+	if(!(rooms = ft_lstnew(NULL, 0)))
 		ERROR;
-	if(!(pipes = (t_strlink *)malloc(sizeof(t_strlink))))
+	if(!(pipes = ft_lstnew(NULL, 0)))
 		ERROR;
     if (!(fd = open("test", O_RDONLY)))
     	ERROR;
 	ants = get_ants();
 	size_matr = parce(rooms, pipes);
 	links = matr_connection(size_matr);
+	graph = SignGraph(size_matr, pipes->next, rooms);
 	link_rooms(links, size_matr, pipes->next, rooms);
 	print_matr(links, size_matr);
 //	path_finder(links, size_matr);
