@@ -181,10 +181,6 @@ int main(void)
 	int 			size_matr;
 //	struct s_Graph	*graph;
 
-//	if(!(rooms = ft_lstnew(NULL, 0)))
-//		ERROR;
-//	if(!(pipes = ft_lstnew(NULL, 0)))
-//		ERROR;
     if (!(fd = open("test", O_RDONLY)))
     	ERROR;
 	ants = get_ants();
