@@ -37,7 +37,9 @@ struct					s_Graph
 	struct s_Vertex		*array;
 };
 
-int					parce(t_strlink *rooms, t_strlink *pipes);
+int					parce(t_list **rooms, t_list **pipes);
 int					fd;
+
+void				PrintVertexList(t_list *pList);
 
 #endif

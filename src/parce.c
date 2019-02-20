@@ -12,6 +12,8 @@
 
 #include "lem-in.h"
 
+t_list **SignListPipes(char *pipe, t_list **pList);
+
 t_Vertex	*newVertex(char *str)
 {
 	t_Vertex	*New;
@@ -38,10 +40,11 @@ bool    comand(char *str, t_list **rooms)
 			ERROR;
 		ft_lstaddback(rooms, ft_lstnew(newVertex(str), sizeof(t_Vertex *)));
 	}
+//	PrintVertexList(*rooms);
 	return (1);
 }
 
-int			parce(t_list *rooms, t_list *pipes)
+int			parce(t_list **rooms, t_list **pipes)
 {
 	char		*tmp;
 	int			count_rooms;
@@ -52,14 +55,13 @@ int			parce(t_list *rooms, t_list *pipes)
 	while (get_next_line(fd, &tmp) > 0)
 	{
 		if (tmp[0] == '#' && tmp[1] == '#' && ++count_rooms)
-			comand(tmp, &rooms);
+			comand(tmp, rooms);
 		else if (tmp[0] == '#')
 			free(tmp);
 		else if (tmp[0] != 'L' && ft_strchr(tmp, ' ') && ++count_rooms)
-			ft_lstaddhere(&rooms, ft_lstnew(newVertex(tmp), sizeof(t_Vertex *)));
+			ft_lstaddhere(rooms, ft_lstnew(newVertex(tmp), sizeof(t_Vertex *)));
 		else if (ft_strchr(tmp, '-') && ++links)
-			pipes = a(tmp, pipes);
-
+			ft_lstaddback(pipes, ft_lstnew(tmp, sizeof(tmp)));
 	}
-    return (count_rooms);
+	return (count_rooms);
 }

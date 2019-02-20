@@ -48,50 +48,50 @@ int get_ants(void)
 	free(str);
 	return (ant);
 }
-
-void	print_list(t_strlink *lst)
-{
-	int num = 0;
-	if (!lst)
-		lst = lst->next;
-	while (lst)
-	{
-		ft_printf("n%d - %s\n", num++, lst->str);
-		lst = lst->next;
-	}
-}
-
-void	link_rooms(int **matr, int size, t_strlink *pipes, t_strlink *rooms)
-{
-	struct s_point	tmp;
-	t_strlink		*crawler;
-	int 			i;
-	char			*room1;
-	char			*room2;
-
-	while (pipes)
-	{
-		i = 0;
-		tmp.x = -1;
-		tmp.y = -1;
-		crawler = rooms;
-		room1 = pipes->str;
-		room2 = ft_strchr(room1, '-') + 1;
-		while (crawler && (tmp.x < 0 || tmp.y < 0) && size)
-		{
-			if (!ft_strncmp(crawler->str, room1, room2 - room1 - 1))
-				tmp.x = i;
-			if (ft_strnstr(crawler->str, room2, ft_strlen(room2)))
-				tmp.y = i;
-			crawler = crawler->next;
-			i++;
-		}
-		matr[tmp.x][tmp.y] = 11;
-		ft_swap(&tmp.x, &tmp.y);
-		matr[tmp.x][tmp.y] = 11;
-		pipes = pipes->next;
-	}
-}
+//
+//void	PrintVertexList(t_list *lst)
+//{
+//	int num = 0;
+//	if (!lst)
+//		lst = lst->next;
+//	while (lst)
+//	{
+//		ft_printf("n%d - %s\n", num++, lst->str);
+//		lst = lst->next;
+//	}
+//}
+//
+//void	link_rooms(int **matr, int size, t_strlink *pipes, t_strlink *rooms)
+//{
+//	struct s_point	tmp;
+//	t_strlink		*crawler;
+//	int 			i;
+//	char			*room1;
+//	char			*room2;
+//
+//	while (pipes)
+//	{
+//		i = 0;
+//		tmp.x = -1;
+//		tmp.y = -1;
+//		crawler = rooms;
+//		room1 = pipes->str;
+//		room2 = ft_strchr(room1, '-') + 1;
+//		while (crawler && (tmp.x < 0 || tmp.y < 0) && size)
+//		{
+//			if (!ft_strncmp(crawler->str, room1, room2 - room1 - 1))
+//				tmp.x = i;
+//			if (ft_strnstr(crawler->str, room2, ft_strlen(room2)))
+//				tmp.y = i;
+//			crawler = crawler->next;
+//			i++;
+//		}
+//		matr[tmp.x][tmp.y] = 11;
+//		ft_swap(&tmp.x, &tmp.y);
+//		matr[tmp.x][tmp.y] = 11;
+//		pipes = pipes->next;
+//	}
+//}
 
 void	print_matr(int **matr, int size)
 {
@@ -133,21 +133,43 @@ struct s_Graph	*newGraph(int	size)
 //		graph->array[size].Name = NULL;
 	return (graph);
 }
+//
+//struct s_Graph	*SignGraph(int size, t_strlink *pipes, t_strlink *rooms)
+//{
+//	struct s_Graph	*graph;
+//	int 			i;
+//
+//	graph = newGraph(size);
+//	i = 0;
+//	while (i < size)
+//	{
+//		graph->array[i++].Name = rooms->str;
+//		rooms = rooms->next;
+//	}
+//
+//	return (graph);
+//}
 
-struct s_Graph	*SignGraph(int size, t_strlink *pipes, t_strlink *rooms)
+void PrintList(t_list *pList)
 {
-	struct s_Graph	*graph;
-	int 			i;
-
-	graph = newGraph(size);
-	i = 0;
-	while (i < size)
+	while (pList)
 	{
-		graph->array[i++].Name = rooms->str;
-		rooms = rooms->next;
+		ft_printf("%s\n", pList->content);
+		pList = pList->next;
 	}
+}
 
-	return (graph);
+
+void PrintVertexList(t_list *pList)
+{
+	t_Vertex	*tmp;
+
+	while (pList)
+	{
+		tmp = pList->content;
+		printf("size - %zu, (%s)\n", pList->content_size, tmp->Name);
+		pList = pList->next;
+	}
 }
 
 int main(void)
@@ -157,25 +179,29 @@ int main(void)
 	t_list			*pipes;
 	int				**links;
 	int 			size_matr;
-	struct s_Graph	*graph;
+//	struct s_Graph	*graph;
 
-	if(!(rooms = ft_lstnew(NULL, 0)))
-		ERROR;
-	if(!(pipes = ft_lstnew(NULL, 0)))
-		ERROR;
+//	if(!(rooms = ft_lstnew(NULL, 0)))
+//		ERROR;
+//	if(!(pipes = ft_lstnew(NULL, 0)))
+//		ERROR;
     if (!(fd = open("test", O_RDONLY)))
     	ERROR;
 	ants = get_ants();
-	size_matr = parce(rooms, pipes);
+	rooms = NULL;
+	pipes = NULL;
+	size_matr = parce(&rooms, &pipes);
 	links = matr_connection(size_matr);
-	graph = SignGraph(size_matr, pipes->next, rooms);
-	link_rooms(links, size_matr, pipes->next, rooms);
-	print_matr(links, size_matr);
+	PrintVertexList(rooms);
+	PrintList(pipes);
+//	graph = SignGraph(size_matr, pipes->next, rooms);
+//	link_rooms(links, size_matr, pipes->next, rooms);
+//	print_matr(links, size_matr);
 //	path_finder(links, size_matr);
-	print_matr(links, size_matr);
+//	print_matr(links, size_matr);
 
-//	print_list(rooms);
-//	print_list(pipes);
+//	PrintVertexList(rooms);
+//	PrintVertexList(pipes);
 	ft_printf("%d - ants\n", ants);
 	return (1);
 }
