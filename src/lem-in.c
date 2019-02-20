@@ -152,11 +152,13 @@ struct s_Graph	*newGraph(int	size)
 
 void PrintList(t_list *pList)
 {
+	ft_printf("\nOUTPUT LIST\n");
 	while (pList)
 	{
 		ft_printf("%s\n", pList->content);
 		pList = pList->next;
 	}
+	ft_printf("END LIST\n");
 }
 
 
@@ -164,12 +166,14 @@ void PrintVertexList(t_list *pList)
 {
 	t_Vertex	*tmp;
 
+	ft_printf("\nOUTPUT VERTEX LIST\n");
 	while (pList)
 	{
 		tmp = pList->content;
-		printf("size - %zu, (%s)\n", pList->content_size, tmp->Name);
+		ft_printf("%s\n", tmp->Name);
 		pList = pList->next;
 	}
+	ft_printf("END VERTEX LIST\n");
 }
 
 int main(void)
@@ -177,17 +181,18 @@ int main(void)
 	int				ants;
 	t_list			*rooms;
 	t_list			*pipes;
-	int				**links;
+//	int				**links;
 	int 			size_matr;
 //	struct s_Graph	*graph;
 
     if (!(fd = open("test", O_RDONLY)))
     	ERROR;
 	ants = get_ants();
+	ft_printf("%d - ants\n", ants);
 	rooms = NULL;
 	pipes = NULL;
 	size_matr = parce(&rooms, &pipes);
-	links = matr_connection(size_matr);
+//	links = matr_connectiron(size_matr);
 	PrintVertexList(rooms);
 	PrintList(pipes);
 //	graph = SignGraph(size_matr, pipes->next, rooms);
@@ -198,6 +203,5 @@ int main(void)
 
 //	PrintVertexList(rooms);
 //	PrintVertexList(pipes);
-	ft_printf("%d - ants\n", ants);
 	return (1);
 }
