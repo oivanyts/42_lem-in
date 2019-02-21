@@ -18,24 +18,25 @@
 # include "../libft/includes/libftprintf.h"
 # include <stdbool.h>
 
-typedef struct			s_point{
+typedef struct			s_coord{
 	int					x;
 	int 				y;
-} 						t_cord;
+} 						t_coord;
 
 typedef struct			s_Vertex
 {
 	char 				*Name;
+	t_coord				*point;
 	int 				Distance;
 	int					Links;
 	int					*Neighbor;
 }						t_Vertex;
 
-struct					s_Graph
+typedef struct			s_Graph
 {
 	int 				V;
-	struct s_Vertex		*array;
-};
+	t_Vertex			**array;
+}						t_Graph;
 
 int					parce(t_list **rooms, t_list **pipes);
 int					fd;

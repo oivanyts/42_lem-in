@@ -12,6 +12,12 @@
 
 #include "../includes/lem-in.h"
 
+void PrintGraph(t_Graph *pGraph);
+
+
+void linkVertex(t_list *pList, t_Graph **pGraph);
+
+
 int 	**matr_connection(int size)
 {
 	int	**matr;
@@ -61,94 +67,115 @@ int get_ants(void)
 //	}
 //}
 //
-//void	link_rooms(int **matr, int size, t_strlink *pipes, t_strlink *rooms)
-//{
-//	struct s_point	tmp;
-//	t_strlink		*crawler;
-//	int 			i;
-//	char			*room1;
-//	char			*room2;
 //
-//	while (pipes)
+//void	print_matr(int **matr, int size)
+//{
+//	int i = 0;
+//	int j;
+//	ft_printf("{blue} \t%d", 0);
+//	while (size > ++i)
+//		ft_printf(" %d", i);
+//	ft_printf("{eoc}\t%d\n", i);
+//	i = 0;
+//	while (size > i)
 //	{
-//		i = 0;
-//		tmp.x = -1;
-//		tmp.y = -1;
-//		crawler = rooms;
-//		room1 = pipes->str;
-//		room2 = ft_strchr(room1, '-') + 1;
-//		while (crawler && (tmp.x < 0 || tmp.y < 0) && size)
+//		j = 0;
+//		ft_printf("%d\t", i);
+//		while (j <= size)
 //		{
-//			if (!ft_strncmp(crawler->str, room1, room2 - room1 - 1))
-//				tmp.x = i;
-//			if (ft_strnstr(crawler->str, room2, ft_strlen(room2)))
-//				tmp.y = i;
-//			crawler = crawler->next;
-//			i++;
+//			if (matr[i][j])
+//				ft_printf("{red}%d{eoc}\t", matr[i][j]);
+//			else if (i == j)
+//				ft_printf("{cyan}%c{eoc}\t", '\\');
+//			else
+//				ft_printf("%d\t", matr[i][j]);
+//			j++;
 //		}
-//		matr[tmp.x][tmp.y] = 11;
-//		ft_swap(&tmp.x, &tmp.y);
-//		matr[tmp.x][tmp.y] = 11;
-//		pipes = pipes->next;
+//		ft_printf("\n");
+//		i++;
 //	}
+//
 //}
 
-void	print_matr(int **matr, int size)
+
+void PrintGraph(t_Graph *pGraph)
 {
-	int i = 0;
-	int j;
-	ft_printf("{blue} \t%d", 0);
-	while (size > ++i)
-		ft_printf(" %d", i);
-	ft_printf("{eoc}\t%d\n", i);
-	i = 0;
-	while (size > i)
+	int 		size;
+	t_Vertex	*tmp;
+
+	ft_printf("\nPRINTING GRAPH\n\t size - %d\n", pGraph->V);
+	size = 0;
+	while (size < pGraph->V)
 	{
-		j = 0;
-		ft_printf("%d\t", i);
-		while (j <= size)
+		tmp = pGraph->array[size];
+		ft_printf("#%d\tNAME\t  %s\t<%d:%d>{cyan}\n\tDIST\t%d\n\t{green}LINKS\t%d{eoc}\n", size++, tmp->Name, tmp->point->x, tmp->point->y,  tmp->Distance, tmp->Links);
+	}
+}
+
+void countLinks(t_list *pList, t_Graph **pGraph)
+{
+	t_list	*crawler;
+	int		i;
+
+	crawler = pList;
+	while (crawler)
+	{
+		i = 0;
+		while (i < (*pGraph)->V)
 		{
-			if (matr[i][j])
-				ft_printf("{red}%d{eoc}\t", matr[i][j]);
-			else if (i == j)
-				ft_printf("{cyan}%c{eoc}\t", '\\');
-			else
-				ft_printf("%d\t", matr[i][j]);
-			j++;
+			if (ft_strstr(crawler->content, (*pGraph)->array[i]->Name))
+				(*pGraph)->array[i]->Links++;
+			i++;
 		}
-		ft_printf("\n");
-		i++;
+		crawler = crawler->next;
 	}
 
 }
 
-struct s_Graph	*newGraph(int	size)
+void linkVertex(t_list *pList, t_Graph **pGraph)
 {
-	struct s_Graph	*graph;
+	int 	i;
+//	int 	res;
+	char	*link1;
+	char	*link2;
 
-	graph = (struct s_Graph *)malloc(sizeof(struct s_Graph));
+	t_list	*crawler;
+
+	i = (*pGraph)->V;
+	while (--i >= 0)
+		(*pGraph)->array[i]->Neighbor = malloc((*pGraph)->array[i]->Links);
+	crawler = pList;
+	link1 = ft_strnew(100);
+	link2 = ft_strnew(100);
+	while (crawler)
+	{
+		i = 0;
+		link2 = ft_strcpy(link2, ft_strchr(crawler->content, '-') + 1);
+		link1 = ft_strncpy(link1, crawler->content, link2 - (char *)crawler->content - 1);
+		crawler = crawler->next;
+	}
+
+}
+
+t_Graph	*signGraph(int size, t_list *rooms, t_list *pipes)
+{
+	t_Graph	*graph;
+	int 	i = 0;
+
+	if (!(graph = (t_Graph *)malloc(sizeof(t_Graph))) ||
+	!(graph->array = (t_Vertex **)malloc(sizeof(t_Vertex *) * size)))
+		ERROR;
 	graph->V = size;
-//	graph->array = (struct s_Vertex *)malloc(sizeof(struct s_Vertex) * size);
-//	while (size--)
-//		graph->array[size].Name = NULL;
+	while (i < size)
+	{
+		graph->array[i++] = (t_Vertex *)rooms->content;
+		rooms = rooms->next;
+	}
+	countLinks(pipes, &graph);
+	linkVertex(pipes, &graph);
+	PrintGraph(graph);
 	return (graph);
 }
-//
-//struct s_Graph	*SignGraph(int size, t_strlink *pipes, t_strlink *rooms)
-//{
-//	struct s_Graph	*graph;
-//	int 			i;
-//
-//	graph = newGraph(size);
-//	i = 0;
-//	while (i < size)
-//	{
-//		graph->array[i++].Name = rooms->str;
-//		rooms = rooms->next;
-//	}
-//
-//	return (graph);
-//}
 
 void PrintList(t_list *pList)
 {
@@ -165,12 +192,14 @@ void PrintList(t_list *pList)
 void PrintVertexList(t_list *pList)
 {
 	t_Vertex	*tmp;
+	int 		i;
 
+	i = 0;
 	ft_printf("\nOUTPUT VERTEX LIST\n");
 	while (pList)
 	{
 		tmp = pList->content;
-		ft_printf("%s\n", tmp->Name);
+		ft_printf("#%d %s\n", i++, tmp->Name);
 		pList = pList->next;
 	}
 	ft_printf("END VERTEX LIST\n");
@@ -183,7 +212,7 @@ int main(void)
 	t_list			*pipes;
 //	int				**links;
 	int 			size_matr;
-//	struct s_Graph	*graph;
+	struct s_Graph	*graph;
 
     if (!(fd = open("test", O_RDONLY)))
     	ERROR;
@@ -193,14 +222,13 @@ int main(void)
 	pipes = NULL;
 	size_matr = parce(&rooms, &pipes);
 //	links = matr_connectiron(size_matr);
-	PrintVertexList(rooms);
-	PrintList(pipes);
-//	graph = SignGraph(size_matr, pipes->next, rooms);
+//	PrintVertexList(rooms);
+//	PrintList(pipes);
+	graph = signGraph(size_matr, rooms, pipes);
 //	link_rooms(links, size_matr, pipes->next, rooms);
 //	print_matr(links, size_matr);
 //	path_finder(links, size_matr);
 //	print_matr(links, size_matr);
-
 //	PrintVertexList(rooms);
 //	PrintVertexList(pipes);
 	return (1);

@@ -19,7 +19,8 @@ void	ft_lstaddhere(t_list **alst, t_list *new)
 	if (new && *alst)
 	{
 		crawler = *alst;
-		new->next = crawler->next;
+		if (crawler->next)
+			new->next = crawler->next;
 		crawler->next = new;
 	}
 	else
