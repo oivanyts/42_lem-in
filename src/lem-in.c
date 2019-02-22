@@ -17,10 +17,9 @@ void PrintGraph(t_Graph *pGraph);
 
 void linkVertex(t_list *pList, t_Graph **pGraph);
 
-
 int 	**matr_connection(int size)
 {
-	int	**matr;
+	int		**matr;
 	int		i;
 	int		j;
 
@@ -54,53 +53,10 @@ int get_ants(void)
 	free(str);
 	return (ant);
 }
-//
-//void	PrintVertexList(t_list *lst)
-//{
-//	int num = 0;
-//	if (!lst)
-//		lst = lst->next;
-//	while (lst)
-//	{
-//		ft_printf("n%d - %s\n", num++, lst->str);
-//		lst = lst->next;
-//	}
-//}
-//
-//
-//void	print_matr(int **matr, int size)
-//{
-//	int i = 0;
-//	int j;
-//	ft_printf("{blue} \t%d", 0);
-//	while (size > ++i)
-//		ft_printf(" %d", i);
-//	ft_printf("{eoc}\t%d\n", i);
-//	i = 0;
-//	while (size > i)
-//	{
-//		j = 0;
-//		ft_printf("%d\t", i);
-//		while (j <= size)
-//		{
-//			if (matr[i][j])
-//				ft_printf("{red}%d{eoc}\t", matr[i][j]);
-//			else if (i == j)
-//				ft_printf("{cyan}%c{eoc}\t", '\\');
-//			else
-//				ft_printf("%d\t", matr[i][j]);
-//			j++;
-//		}
-//		ft_printf("\n");
-//		i++;
-//	}
-//
-//}
-
 
 void PrintGraph(t_Graph *pGraph)
 {
-	int 		size;
+	int 		size, i;
 	t_Vertex	*tmp;
 
 	ft_printf("\nPRINTING GRAPH\n\t size - %d\n", pGraph->V);
@@ -108,7 +64,13 @@ void PrintGraph(t_Graph *pGraph)
 	while (size < pGraph->V)
 	{
 		tmp = pGraph->array[size];
-		ft_printf("#%d\tNAME\t  %s\t<%d:%d>{cyan}\n\tDIST\t%d\n\t{green}LINKS\t%d{eoc}\n", size++, tmp->Name, tmp->point->x, tmp->point->y,  tmp->Distance, tmp->Links);
+		ft_printf("#%d\tNAME\t  >%s<\t<%d:%d>{cyan}\n\tDIST\t%d\t\t{green}LINKS\t%d{red}\t\t{",
+				size, tmp->name, tmp->point->x, tmp->point->y,  tmp->distance, tmp->links);
+		i = 0;
+		while (i < pGraph->array[size]->links)
+			ft_printf(" %s,", pGraph->array[pGraph->array[size]->Neighbor[i++]]->name);
+		ft_printf("%c}\n{eoc}", ' ');
+		size++;
 	}
 }
 
@@ -123,8 +85,8 @@ void countLinks(t_list *pList, t_Graph **pGraph)
 		i = 0;
 		while (i < (*pGraph)->V)
 		{
-			if (ft_strstr(crawler->content, (*pGraph)->array[i]->Name))
-				(*pGraph)->array[i]->Links++;
+			if (ft_strstr(crawler->content, (*pGraph)->array[i]->name))
+				(*pGraph)->array[i]->links++;
 			i++;
 		}
 		crawler = crawler->next;
@@ -132,29 +94,39 @@ void countLinks(t_list *pList, t_Graph **pGraph)
 
 }
 
+int secondLink(t_Graph *pGraph, char *link, int i)
+{
+	int j;
+
+	j = 0;
+	while (j < pGraph->V)
+	{
+		if (i != j && ft_strstr(link, pGraph->array[j]->name))
+			return (j);
+		j++;
+	}
+	return (-1);
+}
+
 void linkVertex(t_list *pList, t_Graph **pGraph)
 {
 	int 	i;
-//	int 	res;
-	char	*link1;
-	char	*link2;
-
 	t_list	*crawler;
 
 	i = (*pGraph)->V;
 	while (--i >= 0)
-		(*pGraph)->array[i]->Neighbor = malloc((*pGraph)->array[i]->Links);
-	crawler = pList;
-	link1 = ft_strnew(100);
-	link2 = ft_strnew(100);
-	while (crawler)
+		(*pGraph)->array[i]->Neighbor = malloc((*pGraph)->array[i]->links);
+	while (++i < (*pGraph)->V)
 	{
-		i = 0;
-		link2 = ft_strcpy(link2, ft_strchr(crawler->content, '-') + 1);
-		link1 = ft_strncpy(link1, crawler->content, link2 - (char *)crawler->content - 1);
-		crawler = crawler->next;
+		crawler = pList;
+		while (crawler)
+		{
+			if (ft_strnstr(crawler->content, (*pGraph)->array[i]->name, crawler->content_size))
+				(*pGraph)->array[i]->Neighbor[(*pGraph)->array[i]->linksAdded++]
+				= secondLink(*pGraph, (char *)crawler->content, i);
+			crawler = crawler->next;
+		}
 	}
-
 }
 
 t_Graph	*signGraph(int size, t_list *rooms, t_list *pipes)
@@ -182,7 +154,7 @@ void PrintList(t_list *pList)
 	ft_printf("\nOUTPUT LIST\n");
 	while (pList)
 	{
-		ft_printf("%s\n", pList->content);
+		ft_printf("%.*s\n", pList->content_size, (char *)pList->content);
 		pList = pList->next;
 	}
 	ft_printf("END LIST\n");
@@ -199,7 +171,7 @@ void PrintVertexList(t_list *pList)
 	while (pList)
 	{
 		tmp = pList->content;
-		ft_printf("#%d %s\n", i++, tmp->Name);
+		ft_printf("#%d %s\n", i++, tmp->name);
 		pList = pList->next;
 	}
 	ft_printf("END VERTEX LIST\n");

@@ -25,10 +25,11 @@ typedef struct			s_coord{
 
 typedef struct			s_Vertex
 {
-	char 				*Name;
+	char 				*name;
 	t_coord				*point;
-	int 				Distance;
-	int					Links;
+	int 				distance;
+	int					links;
+	int					linksAdded;
 	int					*Neighbor;
 }						t_Vertex;
 

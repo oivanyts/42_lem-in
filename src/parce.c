@@ -22,10 +22,11 @@ t_Vertex	*newVertex(char *str)
 	if (!(New = (t_Vertex *)malloc(sizeof(t_Vertex))) || !(New->point =
 			(t_coord *)malloc(sizeof(t_coord))))
 		return (NULL);
-	New->Links = 0;
-	New->Distance = -1;
+	New->links = 0;
+	New->linksAdded = 0;
+	New->distance = -1;
 	tmp = ft_strchr(str, ' ');
-	New->Name = ft_strndup(str, tmp - str);
+	New->name = ft_strndup(str, tmp - str);
 	New->point->x = ft_atoi(tmp);
 	New->point->y = ft_atoi(ft_strchr(tmp + 1, ' '));
 	free(str);
@@ -55,9 +56,7 @@ int			parce(t_list **rooms, t_list **pipes)
 {
 	char		*tmp;
 	int			count_rooms;
-	int			links;
 
-	links = 0;
 	count_rooms = 0;
 	while (get_next_line(fd, &tmp) > 0)
 	{
@@ -67,8 +66,8 @@ int			parce(t_list **rooms, t_list **pipes)
 			free(tmp);
 		else if (tmp[0] != 'L' && ft_strchr(tmp, ' ') && ++count_rooms)
 			ft_lstaddhere(rooms, ft_lstnew(newVertex(tmp), sizeof(t_Vertex)));
-		else if (ft_strchr(tmp, '-') && ++links)
-			ft_lstaddback(pipes, ft_lstnew(tmp, sizeof(tmp)));
+		else if (ft_strchr(tmp, '-'))
+			ft_lstaddback(pipes, ft_lstnew(tmp, ft_strlen(tmp)));
 	}
 	return (count_rooms);
 }
