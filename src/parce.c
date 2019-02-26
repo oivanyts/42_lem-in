@@ -24,7 +24,7 @@ t_Vertex	*newVertex(char *str)
 		return (NULL);
 	New->links = 0;
 	New->linksAdded = 0;
-	New->distance = -1;
+	New->distance = INT_MAX;
 	tmp = ft_strchr(str, ' ');
 	New->name = ft_strndup(str, tmp - str);
 	New->point->x = ft_atoi(tmp);
@@ -65,9 +65,15 @@ int			parce(t_list **rooms, t_list **pipes)
 		else if (tmp[0] == '#')
 			free(tmp);
 		else if (tmp[0] != 'L' && ft_strchr(tmp, ' ') && ++count_rooms)
+		{
 			ft_lstaddhere(rooms, ft_lstnew(newVertex(tmp), sizeof(t_Vertex)));
+		}
 		else if (ft_strchr(tmp, '-'))
+		{
 			ft_lstaddback(pipes, ft_lstnew(tmp, ft_strlen(tmp)));
+			free(tmp);
+		}
+
 	}
 	return (count_rooms);
 }
