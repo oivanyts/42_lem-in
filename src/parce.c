@@ -71,9 +71,7 @@ int			parce(t_list **rooms, t_list **pipes)
 		else if (ft_strchr(tmp, '-'))
 		{
 			ft_lstaddback(pipes, ft_lstnew(tmp, ft_strlen(tmp)));
-			free(tmp);
 		}
-
 	}
 	return (count_rooms);
 }

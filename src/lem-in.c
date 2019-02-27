@@ -12,35 +12,7 @@
 
 #include "../includes/lem-in.h"
 
-//void comparePath(int *pVoid, size_t size);
-
-void findDistance(t_Graph **pGraph);
-
-int 	**matr_connection(int size)
-{
-	int		**matr;
-	int		i;
-	int		j;
-
-	i = 0;
-	if (!(matr = (int **)malloc(sizeof(int *) * size)))
-		return (NULL);
-	while (size > i)
-	{
-		j = 0;
-		if (!(matr[i] = (int *)malloc(sizeof(int) * (size + 1))))
-		{
-			while (i--)
-				free(matr[i]);
-			free(matr);
-		}
-		while (j <= size)
-			matr[i][j++] = 0;
-		i++;
-	}
-	ft_printf(" <<< alocated %d matr\n", i);
-	return (matr);
-}
+void cutOff(t_list **pRooms, t_list **pPipes);
 
 int get_ants(void)
 {
@@ -66,8 +38,11 @@ void PrintGraph(t_Graph *pGraph)
 		ft_printf("#%d\tNAME\t  >%s<\t<%d:%d>{cyan}\n\tDIST\t%d\t\t{green}LINKS\t%d{red}\t\t{",
 				size, tmp->name, tmp->point->x, tmp->point->y,  tmp->distance, tmp->links);
 		i = 0;
-//		while (i < pGraph->array[size]->links)
-//			ft_printf(" %s,", pGraph->array[pGraph->array[size]->Neighbor[i++]]->name);
+		while (i < pGraph->array[size]->links)
+		{
+			ft_printf(" %s,", pGraph->array[pGraph->array[size]->Neighbor[i]]->name);
+			i++;
+		}
 		ft_printf("%c}\n{eoc}", ' ');
 		size++;
 	}
@@ -114,8 +89,8 @@ void linkVertex(t_list *pList, t_Graph **pGraph)
 
 	i = (*pGraph)->V;
 	while (--i >= 0)
-		(*pGraph)->array[i]->Neighbor = malloc((*pGraph)->array[i]->links);
-	while (++i < (*pGraph)->V - 1)
+		(*pGraph)->array[i]->Neighbor = malloc((*pGraph)->array[i]->links * sizeof(int));
+	while (++i <= (*pGraph)->V - 1)
 	{
 		crawler = pList;
 		while (crawler)
@@ -165,7 +140,7 @@ void findAllPath(int current, bool *pBoolean, t_Graph *pGraph, t_Path *way)
 		}
 	else
 	{
-		while (pGraph->array[current]->links > i)
+		while (i < pGraph->array[current]->links)
 		{
 			if (!pBoolean[pGraph->array[current]->Neighbor[i]])
 			{
@@ -189,10 +164,10 @@ void	allPath(t_Graph *pGraph)
 	ft_bzero(visitedVert, pGraph->V);
 	way = (t_Path *)malloc(sizeof(t_Path));
 	way->path = malloc(1000 * sizeof(int));
-	ft_bzero(way->path, 8000);
+	ft_bzero(way->path, 1000 * sizeof(int));
 	way->size = 0;
 //	gbestpath = 200;
-	findAllPath(0, visitedVert, pGraph, way);
+//	findAllPath(0, visitedVert, pGraph, way);
 	printListInt(gAllPath, *pGraph);
 //	comparePath(gAllPath->next->next->next->next->content, gAllPath->next->next->next->next->content_size);
 }
@@ -219,38 +194,8 @@ t_Graph	*signGraph(int size, t_list *rooms, t_list *pipes)
 	}
 	countLinks(pipes, &graph);
 	linkVertex(pipes, &graph);
-//	findDistance(&graph);
 	allPath(graph);
-
 	return (graph);
-}
-
-void findDistance(t_Graph **pGraph)
-{
-	int			i, j, current;
-	t_Vertex	*queue[(*pGraph)->V];
-	int 		queueSize;
-
-	ft_bzero(queue, (*pGraph)->V * 8);
-	queueSize = 1;
-	queue[0] = (*pGraph)->array[(*pGraph)->V - 1];
-	i = 0;
-	(*pGraph)->array[(*pGraph)->V - 1]->distance = 0;
-	while (i < queueSize)
-	{
-		j = 0;
-		while (j < (*pGraph) -> array[i] -> links)
-		{
-			current = (*pGraph) -> array[i] -> Neighbor[j];
-			if ((*pGraph)->array[current]->distance < (*pGraph)->array[i]->distance + 1)
-			{
-				(*pGraph)->array[current]->distance = (*pGraph)->array[i]->distance + 1;
-				queue[queueSize++] = (*pGraph)->array[current];
-			}
-			j++;
-		}
-		i++;
-	}
 }
 
 void PrintList(t_list *pList)
@@ -288,7 +233,7 @@ int main(void)
 	t_list			*pipes;
 //	int				**links;
 	int 			size_matr;
-	struct s_Graph	*graph;
+//	struct s_Graph	*graph;
 
     if (!(fd = open(FILENAME, O_RDONLY)))
     	ERROR;
@@ -300,7 +245,10 @@ int main(void)
 //	links = matr_connectiron(size_matr);
 //	PrintVertexList(rooms);
 //	PrintList(pipes);
-	graph = signGraph(size_matr, rooms, pipes);
+	cutOff(&rooms, &pipes);
+	PrintVertexList(rooms);
+//	graph = signGraph(size_matr, rooms, pipes);
+//	fillDistance(&graph);
 //	PrintGraph(graph);
 //	link_rooms(links, size_matr, pipes->next, rooms);
 //	print_matr(links, size_matr);
@@ -310,4 +258,36 @@ int main(void)
 //	PrintVertexList(pipes);
 //	system("leaks -q lemin > leaks.txt");
 	return (1);
+}
+
+void cutOff(t_list **pRooms, t_list **pPipes)
+{
+	t_list	*crawlerRoom;
+	t_list	*crawlerPipe;
+	t_list	*crawlerLastRoom;
+	int		count;
+
+	crawlerLastRoom = *pRooms;
+	crawlerRoom = (*pRooms)->next;
+	while (crawlerRoom->next)
+	{
+		count = 0;
+		crawlerPipe = *pPipes;
+		while (crawlerPipe)
+		{
+			if (ft_strnstr(crawlerPipe->content, crawlerRoom->content, (ft_strchr(crawlerRoom->content, ' ') - (char *)crawlerRoom->content)))
+				count++;
+			crawlerPipe = crawlerPipe->next;
+		}
+		if (count == 1)
+		{
+			crawlerLastRoom->next = crawlerRoom->next;
+			free(crawlerRoom->content);
+			free(crawlerRoom);
+			cutOff(pRooms, pPipes);
+			break ;
+		}
+		crawlerLastRoom = crawlerRoom;
+		crawlerRoom = crawlerRoom->next;
+	}
 }
