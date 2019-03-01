@@ -58,19 +58,23 @@ int			parce(t_list **rooms, t_list **pipes)
 	int			count_rooms;
 
 	count_rooms = 0;
-	while (get_next_line(fd, &tmp) > 0)
+	while (get_next_line(fd, &tmp) == 1)
 	{
 		if (tmp[0] == '#' && tmp[1] == '#' && ++count_rooms)
 			comand(tmp, rooms);
 		else if (tmp[0] == '#')
+		{
+			if (ft_strnstr(tmp, "#Here is the number of lines required", 37))
+				gmoves = ft_atoi(tmp + 38);
 			free(tmp);
+		}
 		else if (tmp[0] != 'L' && ft_strchr(tmp, ' ') && ++count_rooms)
 		{
 			ft_lstaddhere(rooms, ft_lstnew(newVertex(tmp), sizeof(t_Vertex)));
 		}
 		else if (ft_strchr(tmp, '-'))
 		{
-			ft_lstaddback(pipes, ft_lstnew(tmp, ft_strlen(tmp)));
+			ft_lstaddback(pipes, ft_lstnew(tmp, ft_strlen(tmp) + 1));
 		}
 	}
 	return (count_rooms);

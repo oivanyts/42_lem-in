@@ -18,7 +18,6 @@
 //# define FILENAME "flow-1000.txt"
 //# define FILENAME "big.txt"
 # define FILENAME "big_s.txt"
-//# define FILENAME "test1"
 //# define FILENAME "test"
 # include "../libft/includes/libftprintf.h"
 # include <stdbool.h>
@@ -50,8 +49,10 @@ typedef struct			s_Graph
 	t_Vertex			**array;
 }						t_Graph;
 
-int 				gbestpath;
-void				fillDistance(t_Graph **pGraph);
+int 				gresult;
+int					gmoves;
+void				findParallel(t_Graph **pGraph);
+bool				fillDistance(t_Graph **pGraph, bool **closedVert);
 t_list				*gAllPath;
 int					parce(t_list **rooms, t_list **pipes);
 int					fd;

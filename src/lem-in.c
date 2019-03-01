@@ -12,8 +12,6 @@
 
 #include "../includes/lem-in.h"
 
-void cutOff(t_list **pRooms, t_list **pPipes);
-
 int get_ants(void)
 {
 	char	*str;
@@ -168,15 +166,9 @@ void	allPath(t_Graph *pGraph)
 	way->size = 0;
 //	gbestpath = 200;
 //	findAllPath(0, visitedVert, pGraph, way);
-	printListInt(gAllPath, *pGraph);
+//	printListInt(gAllPath, *pGraph);
 //	comparePath(gAllPath->next->next->next->next->content, gAllPath->next->next->next->next->content_size);
 }
-
-//void comparePath(int *pVoid, size_t size)
-//{
-//	allPath()
-//}
-//
 
 t_Graph	*signGraph(int size, t_list *rooms, t_list *pipes)
 {
@@ -194,7 +186,6 @@ t_Graph	*signGraph(int size, t_list *rooms, t_list *pipes)
 	}
 	countLinks(pipes, &graph);
 	linkVertex(pipes, &graph);
-	allPath(graph);
 	return (graph);
 }
 
@@ -226,29 +217,84 @@ void PrintVertexList(t_list *pList)
 	ft_printf("END VERTEX LIST\n");
 }
 
+int cutOff(t_list **pRooms, t_list **pPipes)
+{
+	t_list		*crawlerRoom;
+	t_list		*crawlerPipe;
+	t_list		*lastRoom;
+	t_list		*beforeDeletedPipe;
+	t_Vertex	*tmp;
+	int			count, res = 0;
+
+	lastRoom = *pRooms;
+	crawlerRoom = (*pRooms);
+	while (crawlerRoom)
+	{
+		count = 0;
+		crawlerPipe = *pPipes;
+		tmp = crawlerRoom->content;
+		beforeDeletedPipe = NULL;
+		while (crawlerPipe)
+		{
+			if (ft_strnstr(crawlerPipe->content, tmp->name, crawlerPipe->content_size))
+				count++;
+			else if (count == 0)
+				beforeDeletedPipe = crawlerPipe;
+			crawlerPipe = crawlerPipe->next;
+		}
+		if (count == 1 && crawlerRoom != *pRooms && crawlerRoom->next)
+		{
+			if (beforeDeletedPipe)
+			{
+				free(beforeDeletedPipe->next->content);
+				beforeDeletedPipe->next = beforeDeletedPipe->next->next;
+			}
+			else
+			{
+				beforeDeletedPipe = *pPipes;
+				*pPipes = (*pPipes)->next;
+				free(beforeDeletedPipe);
+			}
+			lastRoom->next = crawlerRoom->next;
+			free(crawlerRoom->content);  // add here f that can delete t_Vertex
+			free(crawlerRoom);
+			res++;
+			crawlerRoom = lastRoom->next;
+			continue ;
+		}
+		else
+			tmp->links = count;
+		lastRoom = crawlerRoom;
+		crawlerRoom = crawlerRoom->next;
+	}
+	if (res != 0)
+		return (res + cutOff(pRooms, pPipes));
+	return (res);
+}
+
 int main(void)
 {
 	int				ants;
 	t_list			*rooms;
 	t_list			*pipes;
-//	int				**links;
 	int 			size_matr;
-//	struct s_Graph	*graph;
+	struct s_Graph	*graph;
 
     if (!(fd = open(FILENAME, O_RDONLY)))
     	ERROR;
+//	fd = 0;
 	ants = get_ants();
 	ft_printf("%d - ants\n", ants);
 	rooms = NULL;
 	pipes = NULL;
 	size_matr = parce(&rooms, &pipes);
-//	links = matr_connectiron(size_matr);
 //	PrintVertexList(rooms);
+//	size_matr -= cutOff(&rooms, &pipes);
 //	PrintList(pipes);
-	cutOff(&rooms, &pipes);
-	PrintVertexList(rooms);
-//	graph = signGraph(size_matr, rooms, pipes);
-//	fillDistance(&graph);
+//	PrintVertexList(rooms);
+	graph = signGraph(size_matr, rooms, pipes);
+	findParallel(&graph);
+	ft_printf(ants <= gresult ? "{green}SUCCESS{eoc}%c" : "{red}FAIL{eoc}%c", '\n');
 //	PrintGraph(graph);
 //	link_rooms(links, size_matr, pipes->next, rooms);
 //	print_matr(links, size_matr);
@@ -258,36 +304,4 @@ int main(void)
 //	PrintVertexList(pipes);
 //	system("leaks -q lemin > leaks.txt");
 	return (1);
-}
-
-void cutOff(t_list **pRooms, t_list **pPipes)
-{
-	t_list	*crawlerRoom;
-	t_list	*crawlerPipe;
-	t_list	*crawlerLastRoom;
-	int		count;
-
-	crawlerLastRoom = *pRooms;
-	crawlerRoom = (*pRooms)->next;
-	while (crawlerRoom->next)
-	{
-		count = 0;
-		crawlerPipe = *pPipes;
-		while (crawlerPipe)
-		{
-			if (ft_strnstr(crawlerPipe->content, crawlerRoom->content, (ft_strchr(crawlerRoom->content, ' ') - (char *)crawlerRoom->content)))
-				count++;
-			crawlerPipe = crawlerPipe->next;
-		}
-		if (count == 1)
-		{
-			crawlerLastRoom->next = crawlerRoom->next;
-			free(crawlerRoom->content);
-			free(crawlerRoom);
-			cutOff(pRooms, pPipes);
-			break ;
-		}
-		crawlerLastRoom = crawlerRoom;
-		crawlerRoom = crawlerRoom->next;
-	}
 }
