@@ -23,10 +23,10 @@ int get_ants(void)
 	return (ant);
 }
 
-void PrintGraph(t_Graph *pGraph)
+void PrintGraph(t_graph *pGraph)
 {
 	int 		size, i;
-	t_Vertex	*tmp;
+	t_vertex	*tmp;
 
 	ft_printf("\nPRINTING GRAPH\n\t size - %d\n", pGraph->V);
 	size = 0;
@@ -38,7 +38,7 @@ void PrintGraph(t_Graph *pGraph)
 		i = 0;
 		while (i < pGraph->array[size]->links)
 		{
-			ft_printf(" %s,", pGraph->array[pGraph->array[size]->Neighbor[i]]->name);
+			ft_printf(" %s,", pGraph->array[pGraph->array[size]->neighbor[i]]->name);
 			i++;
 		}
 		ft_printf("%c}\n{eoc}", ' ');
@@ -46,7 +46,7 @@ void PrintGraph(t_Graph *pGraph)
 	}
 }
 
-void countLinks(t_list *pList, t_Graph **pGraph)
+void countLinks(t_list *pList, t_graph **pGraph)
 {
 	t_list	*crawler;
 	int		i;
@@ -66,7 +66,7 @@ void countLinks(t_list *pList, t_Graph **pGraph)
 
 }
 
-int secondLink(t_Graph *pGraph, char *link, int i)
+int secondLink(t_graph *pGraph, char *link, int i)
 {
 	int j;
 
@@ -80,28 +80,28 @@ int secondLink(t_Graph *pGraph, char *link, int i)
 	return (-1);
 }
 
-void linkVertex(t_list *pList, t_Graph **pGraph)
+void linkVertex(t_list *pList, t_graph **pGraph)
 {
 	int 	i;
 	t_list	*crawler;
 
 	i = (*pGraph)->V;
 	while (--i >= 0)
-		(*pGraph)->array[i]->Neighbor = malloc((*pGraph)->array[i]->links * sizeof(int));
+		(*pGraph)->array[i]->neighbor = malloc((*pGraph)->array[i]->links * sizeof(int));
 	while (++i <= (*pGraph)->V - 1)
 	{
 		crawler = pList;
 		while (crawler)
 		{
 			if (ft_strnstr(crawler->content, (*pGraph)->array[i]->name, crawler->content_size))
-				(*pGraph)->array[i]->Neighbor[(*pGraph)->array[i]->linksAdded++]
+				(*pGraph)->array[i]->neighbor[(*pGraph)->array[i]->linksAdded++]
 				= secondLink(*pGraph, (char *)crawler->content, i);
 			crawler = crawler->next;
 		}
 	}
 }
 
-void	printListInt(t_list *pList, t_Graph pGraph)
+void	printListInt(t_list *pList, t_graph pGraph)
 {
 	int	i, counter = 0;
 	int	*way;
@@ -123,7 +123,7 @@ void	printListInt(t_list *pList, t_Graph pGraph)
 	ft_printf("#paths %d", counter);
 }
 
-void findAllPath(int current, bool *pBoolean, t_Graph *pGraph, t_Path *way)
+void findAllPath(int current, bool *pBoolean, t_graph *pGraph, t_path *way)
 {
 	int i;
 
@@ -140,12 +140,12 @@ void findAllPath(int current, bool *pBoolean, t_Graph *pGraph, t_Path *way)
 	{
 		while (i < pGraph->array[current]->links)
 		{
-			if (!pBoolean[pGraph->array[current]->Neighbor[i]])
+			if (!pBoolean[pGraph->array[current]->neighbor[i]])
 			{
 				way->size++;
 				way->path[way->size - 1] = current;
 				pBoolean[current] = (bool)1;
-				findAllPath(pGraph->array[current]->Neighbor[i], pBoolean, pGraph, way);
+				findAllPath(pGraph->array[current]->neighbor[i], pBoolean, pGraph, way);
 			}
 			i++;
 		}
@@ -154,37 +154,37 @@ void findAllPath(int current, bool *pBoolean, t_Graph *pGraph, t_Path *way)
 	way->size -= 1;
 }
 
-void	allPath(t_Graph *pGraph)
+void	allPath(t_graph *pGraph)
 {
 	bool		visitedVert[pGraph->V];
-	t_Path		*way;
+	t_path		*way;
 
 	ft_bzero(visitedVert, pGraph->V);
-	way = (t_Path *)malloc(sizeof(t_Path));
+	way = (t_path *)malloc(sizeof(t_path));
 	way->path = malloc(1000 * sizeof(int));
 	ft_bzero(way->path, 1000 * sizeof(int));
 	way->size = 0;
 //	gbestpath = 200;
-//	findAllPath(0, visitedVert, pGraph, way);
-//	printListInt(gAllPath, *pGraph);
+	findAllPath(0, visitedVert, pGraph, way);
+	printListInt(gAllPath, *pGraph);
 //	comparePath(gAllPath->next->next->next->next->content, gAllPath->next->next->next->next->content_size);
 }
 
-t_Graph	*signGraph(int size, t_list *rooms, t_list *pipes)
+t_graph	*signGraph(int size, t_list *rooms, t_list *pipes)
 {
-	t_Graph	*graph;
+	t_graph	*graph;
 	int 	i = 0;
 
-	if (!(graph = (t_Graph *)malloc(sizeof(t_Graph))) ||
-	!(graph->array = (t_Vertex **)malloc(sizeof(t_Vertex *) * size)))
+	if (!(graph = (t_graph *)malloc(sizeof(t_graph))) ||
+	!(graph->array = (t_vertex **)malloc(sizeof(t_vertex *) * size)))
 		ERROR;
 	graph->V = size;
 	while (i < size)
 	{
-		graph->array[i++] = (t_Vertex *)rooms->content;
+		graph->array[i++] = (t_vertex *)rooms->content;
 		rooms = rooms->next;
 	}
-	countLinks(pipes, &graph);
+//	countLinks(pipes, &graph);
 	linkVertex(pipes, &graph);
 	return (graph);
 }
@@ -203,7 +203,7 @@ void PrintList(t_list *pList)
 
 void PrintVertexList(t_list *pList)
 {
-	t_Vertex	*tmp;
+	t_vertex	*tmp;
 	int 		i;
 
 	i = 0;
@@ -223,7 +223,7 @@ int cutOff(t_list **pRooms, t_list **pPipes)
 	t_list		*crawlerPipe;
 	t_list		*lastRoom;
 	t_list		*beforeDeletedPipe;
-	t_Vertex	*tmp;
+	t_vertex	*tmp;
 	int			count, res = 0;
 
 	lastRoom = *pRooms;
@@ -256,7 +256,7 @@ int cutOff(t_list **pRooms, t_list **pPipes)
 				free(beforeDeletedPipe);
 			}
 			lastRoom->next = crawlerRoom->next;
-			free(crawlerRoom->content);  // add here f that can delete t_Vertex
+			free(crawlerRoom->content);  // add here f that can delete t_vertex
 			free(crawlerRoom);
 			res++;
 			crawlerRoom = lastRoom->next;
@@ -278,22 +278,23 @@ int main(void)
 	t_list			*rooms;
 	t_list			*pipes;
 	int 			size_matr;
-	struct s_Graph	*graph;
+	struct s_graph	*graph;
 
     if (!(fd = open(FILENAME, O_RDONLY)))
     	ERROR;
 //	fd = 0;
 	ants = get_ants();
-	ft_printf("%d - ants\n", ants);
 	rooms = NULL;
 	pipes = NULL;
 	size_matr = parce(&rooms, &pipes);
 //	PrintVertexList(rooms);
-//	size_matr -= cutOff(&rooms, &pipes);
+	size_matr -= cutOff(&rooms, &pipes);
 //	PrintList(pipes);
 //	PrintVertexList(rooms);
 	graph = signGraph(size_matr, rooms, pipes);
+//	allPath(graph);
 	findParallel(&graph);
+	ft_printf("required %d\n", ants);
 	ft_printf(ants <= gresult ? "{green}SUCCESS{eoc}%c" : "{red}FAIL{eoc}%c", '\n');
 //	PrintGraph(graph);
 //	link_rooms(links, size_matr, pipes->next, rooms);
@@ -302,6 +303,6 @@ int main(void)
 //	print_matr(links, size_matr);
 //	PrintVertexList(rooms);
 //	PrintVertexList(pipes);
-//	system("leaks -q lemin > leaks.txt");
+	system("leaks -q lemin > leaks.txt");
 	return (1);
 }

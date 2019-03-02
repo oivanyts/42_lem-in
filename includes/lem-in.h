@@ -22,37 +22,39 @@
 # include "../libft/includes/libftprintf.h"
 # include <stdbool.h>
 
-typedef struct			s_coord{
+typedef struct			s_coord
+{
 	int					x;
 	int 				y;
 } 						t_coord;
 
-typedef struct			s_Path
+typedef struct			s_path
 {
 	int					size;
 	int 				*path;
-}						t_Path;
+}						t_path;
 
-typedef struct			s_Vertex
+typedef struct			s_vertex
 {
-	char 				*name;
+	void 				*name;
 	t_coord				*point;
 	int 				distance;
 	int					links;
 	int					linksAdded;
-	int					*Neighbor;
-}						t_Vertex;
+	int					*nextV;
+}						t_vertex;
 
-typedef struct			s_Graph
+typedef struct			s_graph
 {
 	int 				V;
-	t_Vertex			**array;
-}						t_Graph;
+	t_vertex			**array;
+}						t_graph;
 
 int 				gresult;
 int					gmoves;
-void				findParallel(t_Graph **pGraph);
-bool				fillDistance(t_Graph **pGraph, bool **closedVert);
+void				findParallel(t_graph **pGraph);
+bool				fillDistance(t_graph **pGraph, bool **closedVert,
+		t_path **path);
 t_list				*gAllPath;
 int					parce(t_list **rooms, t_list **pipes);
 int					fd;

@@ -12,14 +12,12 @@
 
 #include "lem-in.h"
 
-t_list **SignListPipes(char *pipe, t_list **pList);
-
-t_Vertex	*newVertex(char *str)
+t_vertex	*newVertex(char *str)
 {
-	t_Vertex	*New;
+	t_vertex	*New;
 	char 		*tmp;
 
-	if (!(New = (t_Vertex *)malloc(sizeof(t_Vertex))) || !(New->point =
+	if (!(New = (t_vertex *)malloc(sizeof(t_vertex))) || !(New->point =
 			(t_coord *)malloc(sizeof(t_coord))))
 		return (NULL);
 	New->links = 0;
@@ -40,14 +38,14 @@ bool    comand(char *str, t_list **rooms)
 		free(str);
 		if (get_next_line(fd, &str) == -1)
 			ERROR;
-		ft_lstadd(rooms, ft_lstnew(newVertex(str), sizeof(t_Vertex)));
+		ft_lstadd(rooms, ft_lstnew(newVertex(str), sizeof(t_vertex)));
 	}
 	else if (!ft_strncmp(&str[2], "end", 3))
 	{
 		free(str);
 		if (get_next_line(fd, &str) == -1)
 			ERROR;
-		ft_lstaddback(rooms, ft_lstnew(newVertex(str), sizeof(t_Vertex)));
+		ft_lstaddback(rooms, ft_lstnew(newVertex(str), sizeof(t_vertex)));
 	}
 	return (1);
 }
@@ -70,7 +68,7 @@ int			parce(t_list **rooms, t_list **pipes)
 		}
 		else if (tmp[0] != 'L' && ft_strchr(tmp, ' ') && ++count_rooms)
 		{
-			ft_lstaddhere(rooms, ft_lstnew(newVertex(tmp), sizeof(t_Vertex)));
+			ft_lstaddhere(rooms, ft_lstnew(newVertex(tmp), sizeof(t_vertex)));
 		}
 		else if (ft_strchr(tmp, '-'))
 		{
