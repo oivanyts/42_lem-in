@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.12)
-project(LEM-IN LANGUAGES C)
+project(lemin LANGUAGES C)
+#set(CMAKE_C_COMPILER clang)
 
 set(CMAKE_C_STANDARD 99)
-#set(CMAKE_C_FLAGS "-Wextra -Werror -Wall")
+set(CMAKE_C_FLAGS "-Wextra -Werror -Wall")
 
 add_subdirectory(./libft)
 

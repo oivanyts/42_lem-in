@@ -12,6 +12,26 @@
 
 #include "../includes/lem-in.h"
 
+void printAllPath(t_list *pList, t_graph *pGraph)
+{
+	t_path	*tmp;
+	int 	i;
+
+	while (pList)
+	{
+		i = 0;
+		tmp = *(t_path **)(pList->content);
+		ft_printf("{blue}[%d] {eoc} ", tmp->size);
+		while (i < tmp->size)
+		{
+			ft_printf(" -> %s", pGraph->array[tmp->path[i]]->name);
+			i++;
+		}
+		ft_printf("\n");
+		pList = pList->next;
+	}
+}
+
 int closestNeighbor(int current, t_graph *pGraph)
 {
 	int	i;
@@ -34,28 +54,30 @@ int closestNeighbor(int current, t_graph *pGraph)
 	return min == INT_MAX ? -1 : bestNext;
 }
 
-bool printShort(t_graph *pGraph, bool **closedVert, t_path **path)
+bool signShortPath(t_graph *pGraph, bool **closedVert, t_list **allPath)
 {
-	int 	current, i = 0;
-	current = 0;
+	int    current;
+	int    i;
+	t_path *tmp;
 
-	if (pGraph->array[current]->distance == INT_MAX || gmoves - pGraph->array[current]->distance < 0)
+	i = 0;
+	current = 0;
+//	ft_printf("%d <> %d\n\n", pGraph->totalAnts, pGraph->array[current]->distance);
+	if (pGraph->array[current]->distance == INT_MAX)
+//	|| (pGraph->array[current]->distance > pGraph->totalAnts && *allPath))
 		return (0);
-	//	ft_printf("\tPATH = %d\t", gmoves - pGraph->array[current]->distance + 1);
-	*path = malloc(sizeof(t_path));
-	(*path)->size = pGraph->array[current]->distance;
-	(*path)->path = malloc(sizeof(int *) * (*path)->size);
-	gresult += gmoves - pGraph->array[current]->distance + 1;
+	tmp = malloc(sizeof(t_path));
+	tmp->size = pGraph->array[current]->distance;
+	tmp->path = ft_memalloc(sizeof(int) * tmp->size);
+//	gresult += gmoves - pGraph->array[current]->distance + 1;
 	while (current != pGraph->V - 1)
 	{
-		(*path)->path[i++] = current;
-//		ft_printf("%s -> ", pGraph->array[current]->name);
 		if ((current = closestNeighbor(current, pGraph)) == -1)
 			return (0);
-		(*path)->path[i++] = current;
+		tmp->path[i++] = current;
 		(*closedVert)[current] = true;
 	}
-//	ft_printf("%s\n", pGraph->array[current]->name);
+	ft_lstaddback(allPath, ft_lstnew(&tmp, sizeof(t_path *)));
 	return (1);
 }
 
@@ -66,24 +88,7 @@ void	signAllDist(t_graph **pGraph, int dist)
 		(*pGraph)->array[i++]->distance = dist;
 }
 
-void	findParallel(t_graph **pGraph)
-{
-	bool		*closedVert;
-	t_list		*allPath;
-	t_path		*path;
-
-	closedVert = ft_memalloc((size_t)(*pGraph)->V);
-	while (fillDistance(pGraph, &closedVert, &path))
-	{
-		ft_lstaddback(&allPath, ft_lstnew(path, sizeof(path)));
-		signAllDist(pGraph, INT_MAX);
-		closedVert[(*pGraph)->V - 1] = false;
-		closedVert[0] = false;
-	}
-	ft_printf("RESULT %d\n\n", gresult);
-}
-
-bool	fillDistance(t_graph **pGraph, bool **closedVert, t_path **path)
+bool	fillDistance(t_graph **pGraph, bool **closedVert, t_list **allPath)
 {
 	int			i, j, qSize;
 	int			queue[(*pGraph)->V];
@@ -112,8 +117,28 @@ bool	fillDistance(t_graph **pGraph, bool **closedVert, t_path **path)
 		visitedVert[queue[i]] = true;
 		i++;
 	}
-	return !printShort(*pGraph, closedVert, path) ? false : true;
+	return !signShortPath(*pGraph, closedVert, allPath) ? false : true;
 }
+
+void	findParallel(t_graph **pGraph)
+{
+	bool		*closedVert;
+	t_list		*allPath;
+
+	allPath = NULL;
+	closedVert = ft_memalloc((size_t)(*pGraph)->V);
+	while (fillDistance(pGraph, &closedVert, &allPath))
+	{
+		signAllDist(pGraph, INT_MAX);
+		closedVert[(*pGraph)->V - 1] = false;
+		closedVert[0] = false;
+	}
+	printAllPath(allPath, *pGraph);
+//	ft_printf("RESULT %d\n\n", gresult);
+	runAllPath(allPath, pGraph);
+}
+
+
 
 
 

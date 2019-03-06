@@ -14,10 +14,10 @@
 # define LEM_IN_H
 
 # define ERROR exit (ft_printf(">>f - %s l - %d\n", __func__, __LINE__))
-//# define FILENAME "flow_one.txt"
-//# define FILENAME "flow-1000.txt"
+//# define FILENAME "flow-one.txt"
+# define FILENAME "flow-1000.txt"
 //# define FILENAME "big.txt"
-# define FILENAME "big_s.txt"
+//# define FILENAME "big_s.txt"
 //# define FILENAME "test"
 # include "../libft/includes/libftprintf.h"
 # include <stdbool.h>
@@ -47,16 +47,21 @@ typedef struct			s_vertex
 typedef struct			s_graph
 {
 	int 				V;
+	int 				totalAnts;
 	t_vertex			**array;
 }						t_graph;
 
-int 				gresult;
+//int 				gresult;
 int					gmoves;
 void				findParallel(t_graph **pGraph);
 bool				fillDistance(t_graph **pGraph, bool **closedVert,
-		t_path **path);
-t_list				*gAllPath;
+		t_list **allPath);
+void				printAllPath(t_list *pList, t_graph *pGraph);
 int					parce(t_list **rooms, t_list **pipes);
+
+void				runAllPath(t_list *pAllPath, t_graph **pGraph);
+
+t_list				*gAllPath;
 int					fd;
 
 void				PrintVertexList(t_list *pList);

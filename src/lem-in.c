@@ -38,7 +38,7 @@ void PrintGraph(t_graph *pGraph)
 		i = 0;
 		while (i < pGraph->array[size]->links)
 		{
-			ft_printf(" %s,", pGraph->array[pGraph->array[size]->neighbor[i]]->name);
+			ft_printf(" %s,", pGraph->array[pGraph->array[size]->nextV[i]]->name);
 			i++;
 		}
 		ft_printf("%c}\n{eoc}", ' ');
@@ -87,14 +87,14 @@ void linkVertex(t_list *pList, t_graph **pGraph)
 
 	i = (*pGraph)->V;
 	while (--i >= 0)
-		(*pGraph)->array[i]->neighbor = malloc((*pGraph)->array[i]->links * sizeof(int));
+		(*pGraph)->array[i]->nextV = malloc((*pGraph)->array[i]->links * sizeof(int));
 	while (++i <= (*pGraph)->V - 1)
 	{
 		crawler = pList;
 		while (crawler)
 		{
 			if (ft_strnstr(crawler->content, (*pGraph)->array[i]->name, crawler->content_size))
-				(*pGraph)->array[i]->neighbor[(*pGraph)->array[i]->linksAdded++]
+				(*pGraph)->array[i]->nextV[(*pGraph)->array[i]->linksAdded++]
 				= secondLink(*pGraph, (char *)crawler->content, i);
 			crawler = crawler->next;
 		}
@@ -140,12 +140,12 @@ void findAllPath(int current, bool *pBoolean, t_graph *pGraph, t_path *way)
 	{
 		while (i < pGraph->array[current]->links)
 		{
-			if (!pBoolean[pGraph->array[current]->neighbor[i]])
+			if (!pBoolean[pGraph->array[current]->nextV[i]])
 			{
 				way->size++;
 				way->path[way->size - 1] = current;
 				pBoolean[current] = (bool)1;
-				findAllPath(pGraph->array[current]->neighbor[i], pBoolean, pGraph, way);
+				findAllPath(pGraph->array[current]->nextV[i], pBoolean, pGraph, way);
 			}
 			i++;
 		}
@@ -184,7 +184,7 @@ t_graph	*signGraph(int size, t_list *rooms, t_list *pipes)
 		graph->array[i++] = (t_vertex *)rooms->content;
 		rooms = rooms->next;
 	}
-//	countLinks(pipes, &graph);
+	countLinks(pipes, &graph);
 	linkVertex(pipes, &graph);
 	return (graph);
 }
@@ -280,22 +280,23 @@ int main(void)
 	int 			size_matr;
 	struct s_graph	*graph;
 
-    if (!(fd = open(FILENAME, O_RDONLY)))
-    	ERROR;
-//	fd = 0;
+//    if (!(fd = open(FILENAME, O_RDONLY)))
+//    	ERROR;
+	fd = 0;
 	ants = get_ants();
 	rooms = NULL;
 	pipes = NULL;
 	size_matr = parce(&rooms, &pipes);
 //	PrintVertexList(rooms);
-	size_matr -= cutOff(&rooms, &pipes);
+//	size_matr -= cutOff(&rooms, &pipes);
 //	PrintList(pipes);
 //	PrintVertexList(rooms);
 	graph = signGraph(size_matr, rooms, pipes);
+	graph->totalAnts = ants;
 //	allPath(graph);
 	findParallel(&graph);
-	ft_printf("required %d\n", ants);
-	ft_printf(ants <= gresult ? "{green}SUCCESS{eoc}%c" : "{red}FAIL{eoc}%c", '\n');
+	ft_printf("required %d\ngenerator = %d\n", ants, gmoves);
+//	ft_printf(ants <= gresult ? "{green}SUCCESS{eoc}%c" : "{red}FAIL{eoc}%c", '\n');
 //	PrintGraph(graph);
 //	link_rooms(links, size_matr, pipes->next, rooms);
 //	print_matr(links, size_matr);

@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 project(LIBFT LANGUAGES C)
+set(CMAKE_C_COMPILER clang)
 
 # functions find all sourses in path and add their to target
 AUX_SOURCE_DIRECTORY(./src PF_SRCS)
