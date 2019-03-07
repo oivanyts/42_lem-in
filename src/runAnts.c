@@ -17,41 +17,42 @@ int		countAllPath(t_list *pList)
 
 void	runAllPath(t_list *pAllPath, t_graph **pGraph)
 {
-	int 	size, minMoves;
-	t_path	*tmpLast, *tmpCurrent, *tmpBest;
+	int    size, bestSize = 0;
+	float    minMoves;
+	t_path *tmpLast;
 //	int		*antsForPath;
-	int diffPath;
-	int best = INT_MAX;
+	int    diffPath;
+	float    best           = INT_MAX;
 
-	size = 1;
-	tmpBest = *(t_path **)pAllPath->content;
-	minMoves = (*pGraph)->totalAnts + tmpBest->size - 1;
-	if (!(pAllPath = pAllPath->next))
-	{
-		return ;
-	}
-	tmpCurrent = *(t_path **)pAllPath->next->content;
-	diffPath = tmpCurrent->size - 1 ;
-//	ft_printf("minmoves === %d\n", minMoves);
-	while (pAllPath->next)// && diffPath <= (*pGraph)->totalAnts)
+	size = 0;
+	diffPath = 0;
+//	tmpBest = *(t_path **)pAllPath->content;
+//	minMoves = (*pGraph)->totalAnts + tmpBest->size - 1;
+//	diffPath = tmpBest->size - 1;
+//	ft_printf("minmoves === %.2f  dif[%d] size - >%d<\n", minMoves, diffPath, tmpBest->size);
+	while (pAllPath)
 	{
 		size++;
 		tmpLast = *(t_path **)pAllPath->content;
-		tmpCurrent = *(t_path **)pAllPath->next->content;
-		minMoves = ((*pGraph)->totalAnts + diffPath + tmpCurrent->size) / size;
-		diffPath += tmpCurrent->size - 1;
-//		ft_printf("minmoves === %d\n", minMoves);
+		minMoves = (float)((*pGraph)->totalAnts + diffPath + tmpLast->size - 1) / size;
+		diffPath += (tmpLast->size - 1);
+//		ft_printf("minmoves === %.2f  dif[%d] size - >%d<\n", minMoves, diffPath, tmpLast->size);
 		pAllPath = pAllPath->next;
 		if (minMoves < best)
+		{
+			bestSize = size;
 			best = minMoves;
+		}
 		else
-			;
+			break ;
 	}
-	ft_printf("\n\n<<{cyan}%d{eoc}>>\n\n", best);
+//	ft_printf("\n<< %.2f [%d]>>\n", best, bestSize);/**/
+	if (((int)best * 10) == (int)(best * 10.0))
+		gresult = (int)best;
+	else
+		gresult = (int)best + 1;
 //	ft_printf("minmoves === %d\n", minMoves);
 //	antsForPath = malloc(size * sizeof(int));
 //	antsForPath[0] = (*pGraph)->totalAnts;
-	
 //	addPath();
-
 }

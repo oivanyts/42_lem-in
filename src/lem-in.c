@@ -295,7 +295,12 @@ int main(void)
 	graph->totalAnts = ants;
 //	allPath(graph);
 	findParallel(&graph);
-	ft_printf("required %d\ngenerator = %d\n", ants, gmoves);
+	if (gmoves >= gresult)
+	{
+		return (1);
+	}
+	ft_printf("{red}%d < %d{eoc}  ", gmoves, gresult);
+	return (0);
 //	ft_printf(ants <= gresult ? "{green}SUCCESS{eoc}%c" : "{red}FAIL{eoc}%c", '\n');
 //	PrintGraph(graph);
 //	link_rooms(links, size_matr, pipes->next, rooms);
@@ -304,6 +309,5 @@ int main(void)
 //	print_matr(links, size_matr);
 //	PrintVertexList(rooms);
 //	PrintVertexList(pipes);
-	system("leaks -q lemin > leaks.txt");
-	return (1);
+//	system("leaks -q lemin > leaks.txt");
 }

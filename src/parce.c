@@ -21,6 +21,7 @@ t_vertex	*newVertex(char *str)
 			(t_coord *)malloc(sizeof(t_coord))))
 		return (NULL);
 	New->links = 0;
+	New->ants = 0;
 	New->linksAdded = 0;
 	New->distance = INT_MAX;
 	tmp = ft_strchr(str, ' ');

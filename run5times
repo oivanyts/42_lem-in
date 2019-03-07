@@ -1,0 +1,55 @@
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+printf "generating big-superpos$\n"
+for ((i = 0; i < 5; i++))
+do
+if (./generator.uu --big-superposition | ./cmake-build-debug/lemin)
+then
+	printf "${RED}FAIL${NC} "
+else
+	printf "${GREEN}DONE${NC} "
+fi
+done
+printf "\ngenerating big\n"
+for ((i = 0; i < 5; i++))
+do
+if (./generator.uu --big | ./cmake-build-debug/lemin)
+then
+        printf "${RED}FAIL${NC} "
+else
+        printf "${GREEN}DONE${NC} "
+fi
+done
+printf "\ngenerating flow-one\n"
+for ((i = 0; i < 5; i++))
+do
+if (./generator.uu --flow-one | ./cmake-build-debug/lemin)
+then
+        printf "${RED}FAIL${NC} "
+else
+        printf "${GREEN}DONE${NC} "
+fi
+done
+printf "\ngenerating flow-ten\n"
+for ((i = 0; i < 5; i++))
+do
+if (./generator.uu --flow-ten | ./cmake-build-debug/lemin)
+then
+        printf "${RED}FAIL${NC} "
+else
+        printf "${GREEN}DONE${NC} "
+fi
+done
+printf "\ngenerating flow-thousand \n"
+for ((i = 0; i < 5; i++))
+do
+if (./generator.uu --flow-thousand | ./cmake-build-debug/lemin)
+then
+        printf "${RED}FAIL${NC} "
+else
+        printf "${GREEN}DONE${NC} "
+fi
+done
+printf "\n"

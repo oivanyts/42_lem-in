@@ -15,8 +15,9 @@
 
 # define ERROR exit (ft_printf(">>f - %s l - %d\n", __func__, __LINE__))
 //# define FILENAME "flow-one.txt"
-# define FILENAME "flow-1000.txt"
+//# define FILENAME "flow-1000.txt"
 //# define FILENAME "big.txt"
+//# define FILENAME "big.uu"
 //# define FILENAME "big_s.txt"
 //# define FILENAME "test"
 # include "../libft/includes/libftprintf.h"
@@ -38,6 +39,7 @@ typedef struct			s_vertex
 {
 	void 				*name;
 	t_coord				*point;
+	int 				ants;
 	int 				distance;
 	int					links;
 	int					linksAdded;
@@ -51,13 +53,14 @@ typedef struct			s_graph
 	t_vertex			**array;
 }						t_graph;
 
-//int 				gresult;
+int 				gresult;
 int					gmoves;
 void				findParallel(t_graph **pGraph);
 bool				fillDistance(t_graph **pGraph, bool **closedVert,
 		t_list **allPath);
 void				printAllPath(t_list *pList, t_graph *pGraph);
 int					parce(t_list **rooms, t_list **pipes);
+void PrintGraph(t_graph *pGraph);
 
 void				runAllPath(t_list *pAllPath, t_graph **pGraph);
 

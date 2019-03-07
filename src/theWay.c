@@ -62,6 +62,8 @@ bool signShortPath(t_graph *pGraph, bool **closedVert, t_list **allPath)
 
 	i = 0;
 	current = 0;
+//	if (!*allPath)
+//		PrintGraph(pGraph);
 //	ft_printf("%d <> %d\n\n", pGraph->totalAnts, pGraph->array[current]->distance);
 	if (pGraph->array[current]->distance == INT_MAX)
 //	|| (pGraph->array[current]->distance > pGraph->totalAnts && *allPath))
@@ -100,6 +102,7 @@ bool	fillDistance(t_graph **pGraph, bool **closedVert, t_list **allPath)
 	queue[0] = (*pGraph)->V - 1;
 	(*pGraph)->array[queue[0]]->distance = 0;
 	qSize = 1;
+
 	while (i < qSize)
 	{
 		j = 0;
@@ -115,6 +118,8 @@ bool	fillDistance(t_graph **pGraph, bool **closedVert, t_list **allPath)
 			j++;
 		}
 		visitedVert[queue[i]] = true;
+		if (!queue[i])
+			break ;
 		i++;
 	}
 	return !signShortPath(*pGraph, closedVert, allPath) ? false : true;
@@ -133,7 +138,7 @@ void	findParallel(t_graph **pGraph)
 		closedVert[(*pGraph)->V - 1] = false;
 		closedVert[0] = false;
 	}
-	printAllPath(allPath, *pGraph);
+//	printAllPath(allPath, *pGraph);
 //	ft_printf("RESULT %d\n\n", gresult);
 	runAllPath(allPath, pGraph);
 }
