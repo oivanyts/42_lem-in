@@ -21,69 +21,110 @@ void printAllPath(t_list *pList, t_graph *pGraph)
 	{
 		i = 0;
 		tmp = *(t_path **)(pList->content);
-		ft_printf("{blue}[%d] {eoc} ", tmp->size);
+		printf("[%d] ", tmp->size);
 		while (i < tmp->size)
 		{
-			ft_printf(" -> %s", pGraph->array[tmp->path[i]]->name);
+			printf(" -> %s", (char *)pGraph->array[tmp->path[i]]->name);
 			i++;
 		}
-		ft_printf("\n");
+		printf("\n");
 		pList = pList->next;
 	}
 }
-
-int closestNeighbor(int current, t_graph *pGraph)
+static int closestNeighbor1(int current, t_graph *pGraph, int dist)
 {
 	int	i;
 	int min;
 	int bestNext;
 
-	i = 0;
+	i = pGraph->array[current]->links;
 	bestNext = pGraph->array[current]->nextV[0];
 	min = pGraph->array[bestNext]->distance;
-	while (i < pGraph->array[current]->links)
+	while (i--)
 	{
 		if (current != pGraph->array[current]->nextV[i] &&
-			pGraph->array[pGraph->array[current]->nextV[i]]->distance < min)
+			pGraph->array[pGraph->array[current]->nextV[i]]->distance == dist)
 		{
 			bestNext = pGraph->array[current]->nextV[i];
 			min = pGraph->array[bestNext]->distance;
 		}
-		i++;
 	}
+//	i = pGraph->array[current]->links;
+//	while (i--)
+//	{
+//		if (current != pGraph->array[current]->nextV[i] &&
+//			pGraph->array[pGraph->array[current]->nextV[i]]->distance == min && pGraph->array[current]->nextV[i] != bestNext)
+//		{
+//				if (fork() > 0)
+//				{
+//					sleep(1);
+//					ft_printf("{red}%c", '\n');
+//					return (pGraph->array[current]->nextV[i]);
+//				}
+//		}
+//
+//	}
 	return min == INT_MAX ? -1 : bestNext;
 }
+//static int closestNeighbor(int current, t_graph *pGraph)
+//{
+//	int	i;
+//	int min;
+//	int bestNext;
+//
+//	i = pGraph->array[current]->links;
+//	bestNext = pGraph->array[current]->nextV[0];
+//	min = pGraph->array[bestNext]->distance;
+//	while (i--)
+//	{
+//		if (current != pGraph->array[current]->nextV[i] &&
+//			pGraph->array[pGraph->array[current]->nextV[i]]->distance < min)
+//		{
+//			bestNext = pGraph->array[current]->nextV[i];
+//			min = pGraph->array[bestNext]->distance;
+//		}
+//	}
+//	i = pGraph->array[current]->links;
+//	int count = 0;
+//	while (i--)
+//	{
+//		if (current != pGraph->array[current]->nextV[i] &&
+//		pGraph->array[pGraph->array[current]->nextV[i]]->distance == min)
+//			count++;
+//	}
+//	if (count > 1 )
+//		ft_printf("Add path [%d]\n", gtriger);
+//	return min == INT_MAX ? -1 : bestNext;
+//}
 
-bool signShortPath(t_graph *pGraph, bool **closedVert, t_list **allPath)
+static bool signShortPath(t_graph *pGraph, bool **closedVert, t_list **allPath)
 {
 	int    current;
 	int    i;
 	t_path *tmp;
 
-	i = 0;
+	i 		= 0;
 	current = 0;
-//	if (!*allPath)
-//		PrintGraph(pGraph);
-//	ft_printf("%d <> %d\n\n", pGraph->totalAnts, pGraph->array[current]->distance);
 	if (pGraph->array[current]->distance == INT_MAX)
-//	|| (pGraph->array[current]->distance > pGraph->totalAnts && *allPath))
 		return (0);
 	tmp = malloc(sizeof(t_path));
 	tmp->size = pGraph->array[current]->distance;
 	tmp->path = ft_memalloc(sizeof(int) * tmp->size);
-//	gresult += gmoves - pGraph->array[current]->distance + 1;
 	while (current != pGraph->V - 1)
 	{
-		if ((current = closestNeighbor(current, pGraph)) == -1)
-			return (0);
-		tmp->path[i++] = current;
+		if ((current = closestNeighbor1(current, pGraph, tmp->size - i - 1)) == -1)
+			return 0;
+		tmp->path[i]         = current;
 		(*closedVert)[current] = true;
+//		if (closestNeighbor1(current, pGraph, tmp->size - i - 1) != -1)
+//			;
+		i++;
 	}
 	ft_lstaddback(allPath, ft_lstnew(&tmp, sizeof(t_path *)));
 	return (1);
 }
 
-void	signAllDist(t_graph **pGraph, int dist)
+static void	signAllDist(t_graph **pGraph, int dist)
 {
 	int	i = 0;
 	while (i < (*pGraph)->V)
@@ -102,7 +143,6 @@ bool	fillDistance(t_graph **pGraph, bool **closedVert, t_list **allPath)
 	queue[0] = (*pGraph)->V - 1;
 	(*pGraph)->array[queue[0]]->distance = 0;
 	qSize = 1;
-
 	while (i < qSize)
 	{
 		j = 0;
@@ -110,7 +150,7 @@ bool	fillDistance(t_graph **pGraph, bool **closedVert, t_list **allPath)
 		while (j < tmp->links)
 		{
 			if ((*pGraph)->array[tmp->nextV[j]]->distance > tmp->distance + 1
-				&& !(visitedVert)[tmp->nextV[j]] && !(*closedVert)[tmp->nextV[j]])
+			&& !(visitedVert)[tmp->nextV[j]] && !(*closedVert)[tmp->nextV[j]])
 			{
 				(*pGraph)->array[tmp->nextV[j]]->distance = tmp->distance + 1;
 				queue[qSize++] = tmp->nextV[j];
@@ -138,8 +178,7 @@ void	findParallel(t_graph **pGraph)
 		closedVert[(*pGraph)->V - 1] = false;
 		closedVert[0] = false;
 	}
-//	printAllPath(allPath, *pGraph);
-//	ft_printf("RESULT %d\n\n", gresult);
+	printAllPath(allPath, *pGraph);
 	runAllPath(allPath, pGraph);
 }
 

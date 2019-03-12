@@ -12,6 +12,8 @@
 
 #include "../includes/lem-in.h"
 
+void sortList(t_list *pList);
+
 int get_ants(void)
 {
 	char	*str;
@@ -111,7 +113,7 @@ void	printListInt(t_list *pList, t_graph pGraph)
 	{
 		i = 0;
 		way = (int *)pList->content;
-		ft_printf("path size %d \t", pList->content_size/4);
+		ft_printf("{green}path size %d {white}\t", pList->content_size/4);
 		while ((i * sizeof(int)) < pList->content_size)
 		{
 			ft_printf("%s -> ", pGraph.array[way[i++]]->name);
@@ -138,7 +140,7 @@ void findAllPath(int current, bool *pBoolean, t_graph *pGraph, t_path *way)
 		}
 	else
 	{
-		while (i < pGraph->array[current]->links)
+		while (i < pGraph->array[current]->links && way->size < 100)
 		{
 			if (!pBoolean[pGraph->array[current]->nextV[i]])
 			{
@@ -158,6 +160,8 @@ void	allPath(t_graph *pGraph)
 {
 	bool		visitedVert[pGraph->V];
 	t_path		*way;
+//	t_list		*endList;
+//	int 		listSize = 0;
 
 	ft_bzero(visitedVert, pGraph->V);
 	way = (t_path *)malloc(sizeof(t_path));
@@ -166,8 +170,29 @@ void	allPath(t_graph *pGraph)
 	way->size = 0;
 //	gbestpath = 200;
 	findAllPath(0, visitedVert, pGraph, way);
+//	endList = gAllPath;
+//	while (++listSize && endList->next)
+//		endList = endList->next;
+	sortList(gAllPath);
 	printListInt(gAllPath, *pGraph);
 //	comparePath(gAllPath->next->next->next->next->content, gAllPath->next->next->next->next->content_size);
+}
+
+void sortList(t_list *pList)
+{
+	t_list	*crawler = pList;
+
+	while (crawler->next)
+	{
+		if (crawler->content_size > crawler->next->content_size)
+		{
+			ft_swap(crawler->content, crawler->next->content);
+			ft_swap((int *)&(crawler->content_size), (int *)&(crawler->next->content_size));
+			crawler = pList;
+		}
+		else
+			crawler = crawler->next;
+	}
 }
 
 t_graph	*signGraph(int size, t_list *rooms, t_list *pipes)
@@ -279,6 +304,8 @@ int main(void)
 	t_list			*pipes;
 	int 			size_matr;
 	struct s_graph	*graph;
+//	t_list 			*allPath;
+//	bool			*closedVert;
 
 //    if (!(fd = open(FILENAME, O_RDONLY)))
 //    	ERROR;
@@ -287,6 +314,7 @@ int main(void)
 	rooms = NULL;
 	pipes = NULL;
 	size_matr = parce(&rooms, &pipes);
+	printf("\n");
 //	PrintVertexList(rooms);
 //	size_matr -= cutOff(&rooms, &pipes);
 //	PrintList(pipes);
@@ -294,15 +322,20 @@ int main(void)
 	graph = signGraph(size_matr, rooms, pipes);
 	graph->totalAnts = ants;
 //	allPath(graph);
-	findParallel(&graph);
-	if (gmoves >= gresult)
-	{
-		return (1);
-	}
-	ft_printf("{red}%d < %d{eoc}  ", gmoves, gresult);
-	return (0);
-//	ft_printf(ants <= gresult ? "{green}SUCCESS{eoc}%c" : "{red}FAIL{eoc}%c", '\n');
 //	PrintGraph(graph);
+	findParallel(&graph);
+//	allPath	= NULL;
+//	closedVert = ft_memalloc((size_t)(graph->V));
+//	ft_lstaddback(&allPath, findParallel1(0, &graph, &allPath, closedVert));
+//	printAllPath(allPath->content, graph);
+
+//	find2(&graph);
+//	sortList(gAllPath);
+//	printListInt(gAllPath, *graph);
+//	ft_printf(ants <= gresult ? "{green}SUCCESS{eoc}%c" : "{red}FAIL{eoc}%c", '\n');
+//	printAllPath(allPath, *pGraph);
+	printf("\n#2 %d < %d [%d]", gmoves, gresult, ants);
+	return gmoves >= gresult ? 1 : 0;
 //	link_rooms(links, size_matr, pipes->next, rooms);
 //	print_matr(links, size_matr);
 //	path_finder(links, size_matr);

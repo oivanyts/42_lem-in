@@ -1,31 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   bzero.c                                            :+:      :+:    :+:   */
+/*   ft_lstcpy.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: oivanyts <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/10/24 12:12:05 by oivanyts          #+#    #+#             */
-/*   Updated: 2018/10/25 09:38:36 by oivanyts         ###   ########.fr       */
+/*   Created: 2019/03/11 08:28:45 by oivanyts          #+#    #+#             */
+/*   Updated: 2019/03/11 08:28:50 by oivanyts         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/libft.h"
 
-void	ft_bzero(void *s, size_t n)
+t_list	*ft_lstcpy(t_list *src)
 {
-	long long	*ptr;
-	char		*ptr1;
-	long long	zero_byte;
-	size_t		i;
+	t_list *result;
 
-	zero_byte = 0;
-	ptr = s;
-	i = n / 8;
-	n %= 8;
-	while (i--)
-		*ptr++ = zero_byte;
-	ptr1 = (char *)ptr;
-	while (n--)
-		*ptr1++ = 0;
+	if (src == NULL)
+		return (NULL);
+	result = ft_lstnew(src->content, src->content_size);
+	result->next = ft_lstcpy(src->next);
+	return (result);
 }
