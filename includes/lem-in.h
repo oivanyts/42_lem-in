@@ -67,7 +67,9 @@ void PrintGraph(t_graph *pGraph);
 void	find2(t_graph **pGraph);
 t_list	*findParallel1(int start, t_graph **pGraph, t_list **allPath, bool *closedVert);
 
-int				runAllPath(t_list *pAllPath, t_graph **pGraph);
+void				onePath(t_path *currWay, t_graph *pGraph, int antOnStart);
+void				runAllPath(t_list *pAllPath, t_graph **pGraph);
+
 
 t_list				*gAllPath;
 int					fd;

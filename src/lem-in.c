@@ -307,9 +307,9 @@ int main(void)
 //	t_list 			*allPath;
 //	bool			*closedVert;
 
-//    if (!(fd = open(FILENAME, O_RDONLY)))
-//    	ERROR;
-	fd = 0;
+    if (!(fd = open(FILENAME, O_RDONLY)))
+    	ERROR;
+//	fd = 0;
 	ants = get_ants();
 	rooms = NULL;
 	pipes = NULL;
@@ -321,6 +321,7 @@ int main(void)
 //	PrintVertexList(rooms);
 	graph = signGraph(size_matr, rooms, pipes);
 	graph->totalAnts = ants;
+	graph->array[0]->ants = ants;
 //	allPath(graph);
 //	PrintGraph(graph);
 	findParallel(&graph);
