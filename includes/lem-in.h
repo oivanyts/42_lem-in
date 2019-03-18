@@ -17,8 +17,8 @@
 //# define FILENAME "flow-one.txt"
 //# define FILENAME "flow-1000.txt"
 //# define FILENAME "big1.txt"
-# define FILENAME "big.uu"
-//# define FILENAME "big_s.txt"
+//# define FILENAME "big.uu"
+# define FILENAME "big_s.txt"
 //# define FILENAME "test"
 # include "../libft/includes/libftprintf.h"
 # include <stdbool.h>

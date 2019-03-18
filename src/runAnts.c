@@ -17,14 +17,18 @@ void	onePath(t_path *currWay, t_graph *pGraph, int antOnStart)
 			{
 				pGraph->array[currWay->path[mover]]->ants++;
 			}
+			ft_printf("\033[38;05;%dm", pGraph->array[currWay->path[mover - 1]]->ants % 14 + 1); //
 			ft_printf("L%d->%s ", pGraph->array[currWay->path[mover - 1]]->ants, pGraph->array[currWay->path[mover]]->name);
+			ft_printf("\033[m");//
 			pGraph->array[currWay->path[mover - 1]]->ants = -1;
 		}
 	}
 	if (antOnStart)
 	{
 		pGraph->array[currWay->path[0]]->ants = pGraph->totalAnts - pGraph->array[0]->ants;
+		ft_printf("\033[38;05;%dm", pGraph->array[currWay->path[0]]->ants % 14 + 1); //
 		ft_printf("L%d->%s ", pGraph->array[currWay->path[0]]->ants, pGraph->array[currWay->path[0]]->name);
+		ft_printf("\033[m"); //
 		pGraph->array[0]->ants--;
 	}
 }
@@ -48,7 +52,10 @@ int	countIteration(t_list *pAllPath, t_graph **pGraph, int *size)
 		if (minMoves < best)
 			best = minMoves;
 		else
+		{
+			(*size)--;
 			break ;
+		}
 	}
 	return ((int)best * 100) == (int)(best * 100.0) ? (int)best : (int)best + 1;
 }
@@ -58,7 +65,7 @@ void	runAllPath(t_list *pAllPath, t_graph **pGraph)
 	int i, j = 0, nPath = 0;
 	t_list	*crawler;
 	gresult = countIteration(pAllPath, pGraph, &nPath);
-	while ((*pGraph)->array[(*pGraph)->V - 1]->ants != (*pGraph)->totalAnts && j++ < 51)
+	while ((*pGraph)->array[(*pGraph)->V - 1]->ants != (*pGraph)->totalAnts && j++ < 200)
 	{
 		i = 0;
 		crawler = pAllPath;
@@ -68,7 +75,7 @@ void	runAllPath(t_list *pAllPath, t_graph **pGraph)
 			crawler = crawler->next;
 			i++;
 		}
-		ft_printf("\t[%d]\n", (*pGraph)->array[0]->ants);
+		ft_printf(" [%d]\n", (*pGraph)->array[0]->ants);
 	}
 }
 
