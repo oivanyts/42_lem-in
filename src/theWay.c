@@ -179,28 +179,9 @@ void	findParallel(t_graph **pGraph)
 		closedVert[(*pGraph)->V - 1] = false;
 		closedVert[0] = false;
 	}
-	printAllPath(allPath, *pGraph);
+//	printAllPath(allPath, *pGraph);
 	runAllPath(allPath, pGraph);
 }
-//void deleteUnusedLink(t_list *pList, t_graph *pGraph)
-//{
-//	t_path	*tmp;
-//	int 	i, j;
-//
-//	j = 0;
-//	while (pList)
-//	{
-//		i = 0;
-//		tmp = *(t_path **)(pList->content);
-//		pGraph->array[0]->nextV[j++] = tmp->path[i];
-//		while (i < tmp->size - 1)
-//		{
-//			pGraph->array[tmp->path[i]]->nextV[0] = tmp->path[i + 1];
-//			i++;
-//		}
-//		pList = pList->next;
-//	}
-//}
 
 
 

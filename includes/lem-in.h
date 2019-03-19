@@ -67,10 +67,11 @@ void PrintGraph(t_graph *pGraph);
 void	find2(t_graph **pGraph);
 t_list	*findParallel1(int start, t_graph **pGraph, t_list **allPath, bool *closedVert);
 
-void				onePath(t_path *currWay, t_graph *pGraph, int antOnStart);
+void				onePath(t_path *currWay, t_graph *pGraph, bool iter);
 void				runAllPath(t_list *pAllPath, t_graph **pGraph);
 
 
+int 				gants;
 t_list				*gAllPath;
 int					fd;
 void				PrintVertexList(t_list *pList);

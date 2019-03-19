@@ -14,17 +14,6 @@
 
 void sortList(t_list *pList);
 
-int get_ants(void)
-{
-	char	*str;
-	int 	ant;
-	if (get_next_line(fd, &str) <= 0)
-		ERROR;
-	ant = ft_atoi(str);
-	free(str);
-	return (ant);
-}
-
 void PrintGraph(t_graph *pGraph)
 {
 	int 		size, i;
@@ -214,18 +203,6 @@ t_graph	*signGraph(int size, t_list *rooms, t_list *pipes)
 	return (graph);
 }
 
-void PrintList(t_list *pList)
-{
-	ft_printf("\nOUTPUT LIST\n");
-	while (pList)
-	{
-		ft_printf("%.*s\n", pList->content_size, (char *)pList->content);
-		pList = pList->next;
-	}
-	ft_printf("END LIST\n");
-}
-
-
 void PrintVertexList(t_list *pList)
 {
 	t_vertex	*tmp;
@@ -304,16 +281,14 @@ int main(void)
 	t_list			*pipes;
 	int 			size_matr;
 	struct s_graph	*graph;
-//	t_list 			*allPath;
-//	bool			*closedVert;
 
     if (!(fd = open(FILENAME, O_RDONLY)))
     	ERROR;
 //	fd = 0;
-	ants = get_ants();
 	rooms = NULL;
 	pipes = NULL;
 	size_matr = parce(&rooms, &pipes);
+	ants = gants;
 	printf("\n");
 //	PrintVertexList(rooms);
 //	size_matr -= cutOff(&rooms, &pipes);
@@ -325,23 +300,6 @@ int main(void)
 //	allPath(graph);
 //	PrintGraph(graph);
 	findParallel(&graph);
-//	allPath	= NULL;
-//	closedVert = ft_memalloc((size_t)(graph->V));
-//	ft_lstaddback(&allPath, findParallel1(0, &graph, &allPath, closedVert));
-//	printAllPath(allPath->content, graph);
-
-//	find2(&graph);
-//	sortList(gAllPath);
-//	printListInt(gAllPath, *graph);
-//	ft_printf(ants <= gresult ? "{green}SUCCESS{eoc}%c" : "{red}FAIL{eoc}%c", '\n');
-//	printAllPath(allPath, *pGraph);
 	printf("\n#2 %d < %d [%d]", gmoves, gresult, ants);
 	return gmoves >= gresult ? 1 : 0;
-//	link_rooms(links, size_matr, pipes->next, rooms);
-//	print_matr(links, size_matr);
-//	path_finder(links, size_matr);
-//	print_matr(links, size_matr);
-//	PrintVertexList(rooms);
-//	PrintVertexList(pipes);
-//	system("leaks -q lemin > leaks.txt");
 }

@@ -1,6 +1,6 @@
 #include "../includes/lem-in.h"
 
-void	onePath(t_path *currWay, t_graph *pGraph, int antOnStart)
+void	onePath(t_path *currWay, t_graph *pGraph, bool openStart)
 {
 	int mover;
 
@@ -17,18 +17,16 @@ void	onePath(t_path *currWay, t_graph *pGraph, int antOnStart)
 			{
 				pGraph->array[currWay->path[mover]]->ants++;
 			}
-			ft_printf("\033[38;05;%dm", pGraph->array[currWay->path[mover - 1]]->ants % 14 + 1); //
-			ft_printf("L%d->%s ", pGraph->array[currWay->path[mover - 1]]->ants, pGraph->array[currWay->path[mover]]->name);
-			ft_printf("\033[m");//
+			ft_printf("L%d-%s ", pGraph->array[currWay->path[mover - 1]]->ants, pGraph->array[currWay->path[mover]]->name);
 			pGraph->array[currWay->path[mover - 1]]->ants = -1;
 		}
 	}
-	if (antOnStart)
+	if (openStart && pGraph->array[0]->ants)
 	{
-		pGraph->array[currWay->path[0]]->ants = pGraph->totalAnts - pGraph->array[0]->ants;
-		ft_printf("\033[38;05;%dm", pGraph->array[currWay->path[0]]->ants % 14 + 1); //
-		ft_printf("L%d->%s ", pGraph->array[currWay->path[0]]->ants, pGraph->array[currWay->path[0]]->name);
-		ft_printf("\033[m"); //
+		pGraph->array[currWay->path[0]]->ants = pGraph->totalAnts - pGraph->array[0]->ants + 1;
+//		ft_printf("\033[38;05;%dm", pGraph->array[currWay->path[0]]->ants % 14 + 1); //
+		ft_printf("L%d-%s ", pGraph->array[currWay->path[0]]->ants, pGraph->array[currWay->path[0]]->name);
+//		ft_printf("\033[m"); //
 		pGraph->array[0]->ants--;
 	}
 }
@@ -62,20 +60,27 @@ int	countIteration(t_list *pAllPath, t_graph **pGraph, int *size)
 
 void	runAllPath(t_list *pAllPath, t_graph **pGraph)
 {
-	int i, j = 0, nPath = 0;
+	int 	i;
+	int 	nPath;
+	int		j;
 	t_list	*crawler;
+	j = 0;
+	nPath = 0;
 	gresult = countIteration(pAllPath, pGraph, &nPath);
-	while ((*pGraph)->array[(*pGraph)->V - 1]->ants != (*pGraph)->totalAnts && j++ < 200)
+	while (j < gresult)
 	{
 		i = 0;
 		crawler = pAllPath;
 		while(i < nPath)
 		{
-			onePath(*(t_path **)(crawler->content), *pGraph, (*pGraph)->array[0]->ants);
+//			ft_printf("\033[38;05;%dm", (i+16) % 16 + 1); //
+			onePath(*(t_path **)(crawler->content), *pGraph, (j <= gresult - (*(t_path **)(crawler->content))->size));
+//			ft_printf("\033[m");
 			crawler = crawler->next;
 			i++;
 		}
-		ft_printf(" [%d]\n", (*pGraph)->array[0]->ants);
+		ft_printf("\n");
+		j++;
 	}
 }
 

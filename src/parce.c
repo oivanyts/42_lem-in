@@ -12,6 +12,18 @@
 
 #include "lem-in.h"
 
+
+void PrintList(t_list *pList)
+{
+	ft_printf("\nOUTPUT LIST\n");
+	while (pList)
+	{
+		ft_printf("%.*s\n", ft_strlen(*(char **)pList->content), *(char **)pList->content);
+		pList = pList->next;
+	}
+	ft_printf("END LIST\n");
+}
+
 t_vertex	*newVertex(char *str)
 {
 	t_vertex	*New;
@@ -28,22 +40,22 @@ t_vertex	*newVertex(char *str)
 	New->name = ft_strndup(str, tmp - str);
 	New->point->x = ft_atoi(tmp);
 	New->point->y = ft_atoi(ft_strchr(tmp + 1, ' '));
-	free(str);
+//	free(str);
 	return (New);
 }
 
-bool    comand(char *str, t_list **rooms)
+bool    comand(char *str, t_list **rooms, t_list **input)
 {
+	ft_lstaddback(input, ft_lstnew(&str, 8));
 	if (!ft_strncmp(&str[2], "start", 5))
 	{
-		free(str);
 		if (get_next_line(fd, &str) == -1)
 			ERROR;
 		ft_lstadd(rooms, ft_lstnew(newVertex(str), sizeof(t_vertex)));
 	}
 	else if (!ft_strncmp(&str[2], "end", 3))
 	{
-		free(str);
+//		free(str);
 		if (get_next_line(fd, &str) == -1)
 			ERROR;
 		ft_lstaddback(rooms, ft_lstnew(newVertex(str), sizeof(t_vertex)));
@@ -51,16 +63,29 @@ bool    comand(char *str, t_list **rooms)
 	return (1);
 }
 
+int get_ants(void)
+{
+	char	*str;
+	int 	ant;
+	if (get_next_line(fd, &str) <= 0)
+		ERROR;
+	ant = ft_atoi(str);
+	free(str);
+	return (ant);
+}
+
 int			parce(t_list **rooms, t_list **pipes)
 {
 	char		*tmp;
-	int			count_rooms;
+	t_list		*input = NULL;
+	int 		count_rooms = 0;
 
-	count_rooms = 0;
+	if ((gants = get_ants()) <= 0)
+		ERROR;
 	while (get_next_line(fd, &tmp) == 1)
 	{
 		if (tmp[0] == '#' && tmp[1] == '#' && ++count_rooms)
-			comand(tmp, rooms);
+			comand(tmp, rooms, &input);
 		else if (tmp[0] == '#')
 		{
 			if (ft_strnstr(tmp, "#Here is the number of lines required", 37))
@@ -68,13 +93,11 @@ int			parce(t_list **rooms, t_list **pipes)
 			free(tmp);
 		}
 		else if (tmp[0] != 'L' && ft_strchr(tmp, ' ') && ++count_rooms)
-		{
 			ft_lstaddhere(rooms, ft_lstnew(newVertex(tmp), sizeof(t_vertex)));
-		}
 		else if (ft_strchr(tmp, '-'))
-		{
 			ft_lstaddback(pipes, ft_lstnew(tmp, ft_strlen(tmp) + 1));
-		}
+		ft_lstaddback(&input, ft_lstnew(&tmp, 8));
 	}
+	PrintList(input);
 	return (count_rooms);
 }
