@@ -10,24 +10,23 @@ void	onePath(t_path *currWay, t_graph *pGraph, bool openStart)
 		if (mover && pGraph->array[currWay->path[mover - 1]]->ants > -1)
 		{
 			if (mover != currWay->size - 1)
-			{
 				pGraph->array[currWay->path[mover]]->ants = pGraph->array[currWay->path[mover - 1]]->ants;
-			}
 			else if (mover == currWay->size - 1)
-			{
 				pGraph->array[currWay->path[mover]]->ants++;
-			}
-			ft_printf("L%d-%s ", pGraph->array[currWay->path[mover - 1]]->ants, pGraph->array[currWay->path[mover]]->name);
+			if (currWay->path[mover] == pGraph->V - 1)
+				ft_printf("\033[38;05;%dm", (16) % 16 + 1);
+			ft_printf("L%03d-%s ", pGraph->array[currWay->path[mover - 1]]->ants, pGraph->array[currWay->path[mover]]->name);
 			pGraph->array[currWay->path[mover - 1]]->ants = -1;
+			ft_printf("\033[m");
 		}
 	}
-	if (openStart && pGraph->array[0]->ants)
+	while (openStart && pGraph->array[0]->ants > 0)
 	{
 		pGraph->array[currWay->path[0]]->ants = pGraph->totalAnts - pGraph->array[0]->ants + 1;
-//		ft_printf("\033[38;05;%dm", pGraph->array[currWay->path[0]]->ants % 14 + 1); //
-		ft_printf("L%d-%s ", pGraph->array[currWay->path[0]]->ants, pGraph->array[currWay->path[0]]->name);
-//		ft_printf("\033[m"); //
+		ft_printf("L%03d-%s ", pGraph->array[currWay->path[0]]->ants, pGraph->array[currWay->path[0]]->name);
 		pGraph->array[0]->ants--;
+		if (currWay->size != 1)
+			break ;
 	}
 }
 

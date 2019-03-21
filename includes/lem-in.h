@@ -13,13 +13,13 @@
 #ifndef LEM_IN_H
 # define LEM_IN_H
 
-# define ERROR exit (ft_printf(">>f - %s l - %d\n", __func__, __LINE__))
-//# define FILENAME "flow-one.txt"
+# define ERROR exit (ft_printf(">>f - %s l - %d\n ", __func__, __LINE__, system("leaks -q lemin")))
+# define FILENAME "flow-one.txt"
 //# define FILENAME "flow-1000.txt"
 //# define FILENAME "big1.txt"
 //# define FILENAME "big.uu"
-# define FILENAME "big_s.txt"
-//# define FILENAME "test"
+//# define FILENAME "big_s.txt"
+//# define FILENAME "test1"
 # include "../libft/includes/libftprintf.h"
 # include <stdbool.h>
 
@@ -48,6 +48,8 @@ typedef struct			s_vertex
 
 typedef struct			s_graph
 {
+	bool				gotStart;
+	bool				gotEnd;
 	int 				V;
 	int 				totalAnts;
 	t_vertex			**array;
@@ -60,16 +62,17 @@ void				findParallel(t_graph **pGraph);
 bool				fillDistance(t_graph **pGraph, bool **closedVert,
 		t_list **allPath);
 void				findAllPath(int current, bool *pBoolean, t_graph *pGraph, t_path *way);
+void				delAdress(void *obj, size_t size);
 
 void				printAllPath(t_list *pList, t_graph *pGraph);
-int					parce(t_list **rooms, t_list **pipes);
+t_list				*parce(t_list **pipes, t_graph *pGraph);
 void PrintGraph(t_graph *pGraph);
 void	find2(t_graph **pGraph);
 t_list	*findParallel1(int start, t_graph **pGraph, t_list **allPath, bool *closedVert);
 
 void				onePath(t_path *currWay, t_graph *pGraph, bool iter);
 void				runAllPath(t_list *pAllPath, t_graph **pGraph);
-
+//void				delstr(void *toFree, size_t size);
 
 int 				gants;
 t_list				*gAllPath;

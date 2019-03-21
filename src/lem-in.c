@@ -12,7 +12,22 @@
 
 #include "../includes/lem-in.h"
 
-void sortList(t_list *pList);
+void PrintList(t_list *pList)
+{
+	t_list	*tmp1;
+
+	tmp1 = pList;
+	while (tmp1)
+	{
+		pList = pList->next;
+		ft_printf("%.*s\n", ft_strlen(*(char **)tmp1->content), *(char **)tmp1->content);
+		tmp1 = pList;
+	}
+}
+
+int deleteGraph(t_graph **pGraph);
+
+bool validVert(char *string, t_list **pList);
 
 void PrintGraph(t_graph *pGraph)
 {
@@ -37,24 +52,28 @@ void PrintGraph(t_graph *pGraph)
 	}
 }
 
-void countLinks(t_list *pList, t_graph **pGraph)
+bool	countLinks(t_list *pList, t_graph *pGraph)
 {
 	t_list	*crawler;
 	int		i;
+	int 	count;
 
 	crawler = pList;
 	while (crawler)
 	{
 		i = 0;
-		while (i < (*pGraph)->V)
+		count = 0;
+		while (i < pGraph->V)
 		{
-			if (ft_strstr(crawler->content, (*pGraph)->array[i]->name))
-				(*pGraph)->array[i]->links++;
+			if (ft_strstr(*(char **)crawler->content, pGraph->array[i]->name) && ++count)
+				pGraph->array[i]->links++;
 			i++;
 		}
+		if (!count)
+			return (false);
 		crawler = crawler->next;
 	}
-
+	return (true);
 }
 
 int secondLink(t_graph *pGraph, char *link, int i)
@@ -71,33 +90,36 @@ int secondLink(t_graph *pGraph, char *link, int i)
 	return (-1);
 }
 
-void linkVertex(t_list *pList, t_graph **pGraph)
+bool linkVertex(t_list *pList, t_graph **pGraph)
 {
 	int 	i;
 	t_list	*crawler;
 
 	i = (*pGraph)->V;
 	while (--i >= 0)
-		(*pGraph)->array[i]->nextV = malloc((*pGraph)->array[i]->links * sizeof(int));
+		if (!((*pGraph)->array[i]->nextV = ft_memalloc((*pGraph)->array[i]->links * sizeof(int))))
+			return (false);
 	while (++i <= (*pGraph)->V - 1)
 	{
 		crawler = pList;
 		while (crawler)
 		{
-			if (ft_strnstr(crawler->content, (*pGraph)->array[i]->name, crawler->content_size))
+			if (ft_strnstr(*(char **)crawler->content, (*pGraph)->array[i]->name, ft_strlen(*(char **)crawler->content)))
 				(*pGraph)->array[i]->nextV[(*pGraph)->array[i]->linksAdded++]
-				= secondLink(*pGraph, (char *)crawler->content, i);
+				= secondLink(*pGraph, *(char **)crawler->content, i);
 			crawler = crawler->next;
 		}
 	}
+	return (true);
 }
 
 void	printListInt(t_list *pList, t_graph pGraph)
 {
-	int	i, counter = 0;
+	int i;
+	int counter;
 	int	*way;
 
-
+	counter = 0;
 	while (pList)
 	{
 		i = 0;
@@ -145,161 +167,101 @@ void findAllPath(int current, bool *pBoolean, t_graph *pGraph, t_path *way)
 	way->size -= 1;
 }
 
-void	allPath(t_graph *pGraph)
+int	readFarm(t_list **input)
 {
-	bool		visitedVert[pGraph->V];
-	t_path		*way;
-//	t_list		*endList;
-//	int 		listSize = 0;
+	char	*tmp;
+	int 	numVert = -1;
+	int 	startEnd[2];
 
-	ft_bzero(visitedVert, pGraph->V);
-	way = (t_path *)malloc(sizeof(t_path));
-	way->path = malloc(1000 * sizeof(int));
-	ft_bzero(way->path, 1000 * sizeof(int));
-	way->size = 0;
-//	gbestpath = 200;
-	findAllPath(0, visitedVert, pGraph, way);
-//	endList = gAllPath;
-//	while (++listSize && endList->next)
-//		endList = endList->next;
-	sortList(gAllPath);
-	printListInt(gAllPath, *pGraph);
-//	comparePath(gAllPath->next->next->next->next->content, gAllPath->next->next->next->next->content_size);
-}
-
-void sortList(t_list *pList)
-{
-	t_list	*crawler = pList;
-
-	while (crawler->next)
+	ft_bzero(startEnd, 2 * sizeof(int));
+	while (get_next_line(fd, &tmp) == 1)
 	{
-		if (crawler->content_size > crawler->next->content_size)
+		if (!ft_strchr(tmp, '-') && *tmp != '#')
 		{
-			ft_swap(crawler->content, crawler->next->content);
-			ft_swap((int *)&(crawler->content_size), (int *)&(crawler->next->content_size));
-			crawler = pList;
+			numVert++;
+			if (*input && !validVert(tmp, input) )
+				ERROR;
 		}
-		else
-			crawler = crawler->next;
+		else if (!ft_strcmp(tmp, "##end"))
+			startEnd[0] += 1;
+		else if (!ft_strcmp(tmp, "##start"))
+			startEnd[1] += 1;
+		ft_lstaddback(input, ft_lstnew(&tmp, 8));
+		if (startEnd[0] > 1 || startEnd[1] > 1)
+			ERROR;
 	}
-}
-
-t_graph	*signGraph(int size, t_list *rooms, t_list *pipes)
-{
-	t_graph	*graph;
-	int 	i = 0;
-
-	if (!(graph = (t_graph *)malloc(sizeof(t_graph))) ||
-	!(graph->array = (t_vertex **)malloc(sizeof(t_vertex *) * size)))
+	free(tmp);
+	if (startEnd[0] != 1 || startEnd[1] != 1)
 		ERROR;
-	graph->V = size;
-	while (i < size)
-	{
-		graph->array[i++] = (t_vertex *)rooms->content;
-		rooms = rooms->next;
-	}
-	countLinks(pipes, &graph);
-	linkVertex(pipes, &graph);
-	return (graph);
+	PrintList(*input);
+	return (numVert);
 }
 
-void PrintVertexList(t_list *pList)
+bool validVert(char *string, t_list **pList)
 {
-	t_vertex	*tmp;
-	int 		i;
+	t_list	*crawler;
+	size_t	nameSize;
+	void	*tmp;
 
-	i = 0;
-	ft_printf("\nOUTPUT VERTEX LIST\n");
-	while (pList)
+	nameSize = ft_strchr(string, ' ') - string;
+	crawler = (*pList)->next;
+	while (crawler)
 	{
-		tmp = pList->content;
-		ft_printf("#%d %s\n", i++, tmp->name);
-		pList = pList->next;
+		tmp = *(void **)crawler->content;
+		if (*(char *)tmp != '#' && (!ft_memcmp(string, tmp, nameSize) ||
+				!ft_strcmp(string + nameSize, tmp + nameSize)))
+			return (false);
+		crawler = crawler->next;
 	}
-	ft_printf("END VERTEX LIST\n");
+	return (true);
 }
 
-int cutOff(t_list **pRooms, t_list **pPipes)
+int deleteGraph(t_graph **pGraph)
 {
-	t_list		*crawlerRoom;
-	t_list		*crawlerPipe;
-	t_list		*lastRoom;
-	t_list		*beforeDeletedPipe;
-	t_vertex	*tmp;
-	int			count, res = 0;
+	int	i = (*pGraph)->V;
 
-	lastRoom = *pRooms;
-	crawlerRoom = (*pRooms);
-	while (crawlerRoom)
+	while (i--)
 	{
-		count = 0;
-		crawlerPipe = *pPipes;
-		tmp = crawlerRoom->content;
-		beforeDeletedPipe = NULL;
-		while (crawlerPipe)
+		if ((*pGraph)->array[i])
 		{
-			if (ft_strnstr(crawlerPipe->content, tmp->name, crawlerPipe->content_size))
-				count++;
-			else if (count == 0)
-				beforeDeletedPipe = crawlerPipe;
-			crawlerPipe = crawlerPipe->next;
+			if ((*pGraph)->array[i]->name)
+				ft_memdel(&(*pGraph)->array[i]->name);
+			if ((*pGraph)->array[i]->nextV)
+				ft_memdel((void **)&(*pGraph)->array[i]->nextV);
+			if ((*pGraph)->array[i]->point)
+				ft_memdel((void **)&(*pGraph)->array[i]->point);
+			ft_memdel((void **)&(*pGraph)->array[i]);
 		}
-		if (count == 1 && crawlerRoom != *pRooms && crawlerRoom->next)
-		{
-			if (beforeDeletedPipe)
-			{
-				free(beforeDeletedPipe->next->content);
-				beforeDeletedPipe->next = beforeDeletedPipe->next->next;
-			}
-			else
-			{
-				beforeDeletedPipe = *pPipes;
-				*pPipes = (*pPipes)->next;
-				free(beforeDeletedPipe);
-			}
-			lastRoom->next = crawlerRoom->next;
-			free(crawlerRoom->content);  // add here f that can delete t_vertex
-			free(crawlerRoom);
-			res++;
-			crawlerRoom = lastRoom->next;
-			continue ;
-		}
-		else
-			tmp->links = count;
-		lastRoom = crawlerRoom;
-		crawlerRoom = crawlerRoom->next;
 	}
-	if (res != 0)
-		return (res + cutOff(pRooms, pPipes));
-	return (res);
+	ft_memdel((void **)&(*pGraph)->array);
+	ft_memdel((void **)&(*pGraph));
+	return (true);
 }
 
 int main(void)
 {
-	int				ants;
+	int				Vert;
 	t_list			*rooms;
 	t_list			*pipes;
-	int 			size_matr;
-	struct s_graph	*graph;
+	t_graph			*graph;
 
     if (!(fd = open(FILENAME, O_RDONLY)))
     	ERROR;
 //	fd = 0;
-	rooms = NULL;
 	pipes = NULL;
-	size_matr = parce(&rooms, &pipes);
-	ants = gants;
-	printf("\n");
-//	PrintVertexList(rooms);
-//	size_matr -= cutOff(&rooms, &pipes);
-//	PrintList(pipes);
-//	PrintVertexList(rooms);
-	graph = signGraph(size_matr, rooms, pipes);
-	graph->totalAnts = ants;
-	graph->array[0]->ants = ants;
-//	allPath(graph);
+	Vert = readFarm(&pipes);
+	graph = ft_memalloc(sizeof(t_graph));
+	graph->V = Vert;
+	graph->array = ft_memalloc(sizeof(t_vertex *) * graph->V);
+	rooms = parce(&pipes, graph);
+	graph->array[0]->ants = graph->totalAnts;
+	if (!countLinks(rooms, graph) && !linkVertex(rooms, &graph))
+		ERROR;
+	ft_lstdel(&pipes, delAdress);
 //	PrintGraph(graph);
 	findParallel(&graph);
-	printf("\n#2 %d < %d [%d]", gmoves, gresult, ants);
+	deleteGraph(&graph);
+	system("leaks lemin -q");
+	ft_printf("result = %d\n", gresult);
 	return gmoves >= gresult ? 1 : 0;
 }
