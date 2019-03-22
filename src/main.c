@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "lem-in.h"
+#include "lem_in.h"
 
 void			print_input(t_list *p_list)
 {
@@ -32,8 +32,8 @@ static t_graph	*new_graph(int vert)
 
 	if (!(graph = ft_memalloc(sizeof(t_graph))))
 		return (NULL);
-	graph->V = vert;
-	graph->array = ft_memalloc(sizeof(t_vertex *) * graph->V);
+	graph->v = vert;
+	graph->array = ft_memalloc(sizeof(t_vertex *) * graph->v);
 	return (graph);
 }
 
@@ -66,7 +66,7 @@ static int		read_farm(t_list **input)
 
 	num_vert = -1;
 	ft_bzero(start_end, 2 * sizeof(int));
-	while (get_next_line(fd, &tmp) == 1)
+	while (get_next_line(0, &tmp) == 1)
 	{
 		if (!ft_strchr(tmp, '-') && *tmp != '#')
 		{
@@ -94,21 +94,18 @@ int				main(void)
 	t_list			*input_list;
 	t_graph			*graph;
 
-	if (!(fd = open(FILENAME, O_RDONLY)))
-		ERROR;
-//	fd = 0;
 	input_list = NULL;
 	if (!(count_vert = read_farm(&input_list)))
 		ERROR;
 	if (!(graph = new_graph(count_vert)))
 		ERROR;
 	links = parce(input_list, graph);
-	graph->array[0]->ants = graph->totalAnts;
+	graph->array[0]->ants = graph->total_ants;
 	if (!link_vertex(links, graph))
 		ERROR;
 	print_input(input_list);
 	if (!bild_and_run(graph))
 		ERROR;
-	ft_printf("result = %d\n", gresult);
-	return (gresult);
+	ft_printf("result = %d\n", g_result);
+	return (g_result);
 }

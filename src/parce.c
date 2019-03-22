@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "lem-in.h"
+#include "lem_in.h"
 
 static t_vertex	*new_vertex(char *str)
 {
@@ -23,7 +23,7 @@ static t_vertex	*new_vertex(char *str)
 		return (NULL);
 	fresh->links = 0;
 	fresh->ants = -1;
-	fresh->linksAdded = 0;
+	fresh->links_now = 0;
 	fresh->dist = INT_MAX;
 	tmp = ft_strchr(str, ' ');
 	fresh->name = ft_strndup(str, tmp - str);
@@ -49,7 +49,7 @@ t_list			*parce(t_list *input_list, t_graph *graph)
 	t_list	*crawler;
 
 	room = 1;
-	graph->totalAnts = ft_atoi(*(char **)(input_list->content));
+	graph->total_ants = ft_atoi(*(char **)(input_list->content));
 	crawler = input_list->next;
 	while (!ft_strchr(tmp = *(char **)(crawler->content), '-'))
 	{
@@ -60,7 +60,7 @@ t_list			*parce(t_list *input_list, t_graph *graph)
 		}
 		else if (!ft_strcmp(tmp, "##end") && (crawler = crawler->next))
 		{
-			if (!(graph->array[graph->V - 1] = new_vertex(*(char **)(crawler->content))))
+			if (!(graph->array[graph->v - 1] = new_vertex(*(char **)(crawler->content))))
 				ERROR;
 		}
 		else if (ft_strchr(tmp, ' ') && *tmp != '#')

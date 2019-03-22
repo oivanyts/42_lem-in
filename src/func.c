@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/lem-in.h"
+#include "lem_in.h"
 
 static bool	count_links(t_list *input_list, t_graph *graph)
 {
@@ -27,7 +27,7 @@ static bool	count_links(t_list *input_list, t_graph *graph)
 			continue ;
 		}
 		count = 0;
-		while (i < graph->V)
+		while (i < graph->v)
 		{
 			if (ft_strstr(*(char **)crawler->content, graph->array[i]->name)
 			&& ++count)
@@ -46,7 +46,7 @@ static int	second_vert(t_graph *graph, char *link, int i)
 	int j;
 
 	j = 0;
-	while (j < graph->V)
+	while (j < graph->v)
 	{
 		if (i != j && ft_strstr(link, graph->array[j]->name))
 			return (j);
@@ -59,7 +59,7 @@ static int	delete_graph(t_graph **graph)
 {
 	int	i;
 
-	i = (*graph)->V;
+	i = (*graph)->v;
 	while (i--)
 	{
 		if ((*graph)->array[i])
@@ -85,19 +85,19 @@ bool		link_vertex(t_list *list, t_graph *graph)
 
 	if (!count_links(list, graph))
 		return (false);
-	i = graph->V;
+	i = graph->v;
 	while (--i >= 0)
 		if (!(graph->array[i]->link_v = ft_memalloc(graph->array[i]->links *
 				sizeof(int))))
 			return (false);
-	while (++i <= graph->V - 1)
+	while (++i <= graph->v - 1)
 	{
 		crawler = list;
 		while (crawler)
 		{
 			if (ft_strnstr(*(char **)crawler->content, graph->array[i]->name,
 					ft_strlen(*(char **)crawler->content)))
-				graph->array[i]->link_v[graph->array[i]->linksAdded++] =
+				graph->array[i]->link_v[graph->array[i]->links_now++] =
 						second_vert(graph, *(char **)crawler->content, i);
 			crawler = crawler->next;
 		}

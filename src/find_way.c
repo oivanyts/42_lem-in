@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "lem-in.h"
+#include "lem_in.h"
 
 static int	best_link(int current, t_graph *graph, int dist)
 {
@@ -46,7 +46,7 @@ static bool	shortest_path(t_graph *graph, bool **closed_vert, t_list **all_path)
 	tmp = malloc(sizeof(t_path));
 	tmp->size = graph->array[current]->dist;
 	tmp->path = ft_memalloc(sizeof(int) * tmp->size);
-	while (current != graph->V - 1)
+	while (current != graph->v - 1)
 	{
 		if ((current = best_link(current, graph, tmp->size - i - 1)) == -1)
 			return (0);
@@ -63,28 +63,28 @@ static void	set_max_dist(t_graph *graph, bool *visited_v)
 	int	i;
 
 	i = 0;
-	while (i < graph->V - 1)
+	while (i < graph->v - 1)
 	{
 		if (graph->array[i]->dist != INT_MAX)
 			graph->array[i]->dist = INT_MAX;
 		i++;
 	}
-	graph->array[graph->V - 1]->dist = 0;
-	ft_bzero(visited_v, (size_t)graph->V);
+	graph->array[graph->v - 1]->dist = 0;
+	ft_bzero(visited_v, (size_t)graph->v);
 }
 
-bool		fill_distance(t_graph *graph, bool **closed_v, t_list **all_path)
+bool		fill_dist(t_graph *graph, bool **closed_v, t_list **all_path)
 {
 	t_coord		c;
-	int			queue[graph->V];
+	int			queue[graph->v];
 	int			q_size;
 	t_vertex	*tmp;
-	bool		visit_v[graph->V];
+	bool		visit_v[graph->v];
 
 	c.x = 0;
 	q_size = 1;
 	set_max_dist(graph, visit_v);
-	queue[0] = graph->V - 1;
+	queue[0] = graph->v - 1;
 	while (c.x < q_size && (tmp = graph->array[queue[c.x]]))
 	{
 		c.y = 0;
@@ -121,13 +121,13 @@ bool		bild_and_run(t_graph *graph)
 	t_list		*all_path;
 
 	all_path = NULL;
-	if (!(closed_vert = ft_memalloc((size_t)graph->V)))
+	if (!(closed_vert = ft_memalloc((size_t)graph->v)))
 		return (0);
-	while (fill_distance(graph, &closed_vert, &all_path))
+	while (fill_dist(graph, &closed_vert, &all_path))
 	{
 		if (all_path && (*(t_path **)(all_path->content))->size == 1)
 			break ;
-		closed_vert[graph->V - 1] = false;
+		closed_vert[graph->v - 1] = false;
 		closed_vert[0] = false;
 	}
 	if (!all_path)
