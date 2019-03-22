@@ -13,13 +13,13 @@
 #ifndef LEM_IN_H
 # define LEM_IN_H
 
-# define ERROR exit (ft_printf(">>f - %s l - %d\n ", __func__, __LINE__, system("leaks -q lemin")))
-# define FILENAME "flow-one.txt"
+# define ERROR exit (ft_printf("ERROR\n line %d in %s()\n", __LINE__, __func__) && clean_before_exit(&graph, &input_list) && system("leaks -q lemin"))
+//# define FILENAME "flow-one.txt"
 //# define FILENAME "flow-1000.txt"
 //# define FILENAME "big1.txt"
-//# define FILENAME "big.uu"
+# define FILENAME "big.uu"
 //# define FILENAME "big_s.txt"
-//# define FILENAME "test1"
+//# define FILENAME "test"
 # include "../libft/includes/libftprintf.h"
 # include <stdbool.h>
 
@@ -40,38 +40,36 @@ typedef struct			s_vertex
 	void 				*name;
 	t_coord				*point;
 	int 				ants;
-	int 				distance;
+	int 				dist;
 	int					links;
 	int					linksAdded;
-	int					*nextV;
+	int					*link_v;
 }						t_vertex;
 
 typedef struct			s_graph
 {
-	bool				gotStart;
-	bool				gotEnd;
 	int 				V;
 	int 				totalAnts;
 	t_vertex			**array;
 }						t_graph;
 
+int					clean_before_exit(t_graph **graph, t_list **linked_list);
 int 				gresult;
-int					gmoves;
-void				findParallel(t_graph **pGraph);
 
-bool				fillDistance(t_graph **pGraph, bool **closedVert,
-		t_list **allPath);
+bool bild_and_run(t_graph *graph);
+bool link_vertex(t_list *list, t_graph *graph);
+
+bool				fill_distance(t_graph *graph, bool **closed_v, t_list **all_path);
 void				findAllPath(int current, bool *pBoolean, t_graph *pGraph, t_path *way);
-void				delAdress(void *obj, size_t size);
+void				del_str_adress(void *obj, size_t size);
 
 void				printAllPath(t_list *pList, t_graph *pGraph);
-t_list				*parce(t_list **pipes, t_graph *pGraph);
+t_list				*parce(t_list *input_list, t_graph *graph);
 void PrintGraph(t_graph *pGraph);
 void	find2(t_graph **pGraph);
 t_list	*findParallel1(int start, t_graph **pGraph, t_list **allPath, bool *closedVert);
 
-void				onePath(t_path *currWay, t_graph *pGraph, bool iter);
-void				runAllPath(t_list *pAllPath, t_graph **pGraph);
+void				run_all_path(t_list *all_path, t_graph *graph);
 //void				delstr(void *toFree, size_t size);
 
 int 				gants;

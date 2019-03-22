@@ -12,27 +12,27 @@
 
 #include "lem-in.h"
 
-t_vertex	*newVertex(char *str)
+static t_vertex	*new_vertex(char *str)
 {
-	t_vertex	*New;
-	char 		*tmp;
+	t_vertex	*fresh;
+	char		*tmp;
 
-	if (!(New = (t_vertex *)malloc(sizeof(t_vertex))))
+	if (!(fresh = (t_vertex *)malloc(sizeof(t_vertex)))
+	|| !(fresh->point = (t_coord *)malloc(sizeof(t_coord))) || *str == '#'
+	|| *str == ' ')
 		return (NULL);
-	if (!(New->point = (t_coord *)malloc(sizeof(t_coord))))
-		return (NULL);
-	New->links = 0;
-	New->ants = -1;
-	New->linksAdded = 0;
-	New->distance = INT_MAX;
+	fresh->links = 0;
+	fresh->ants = -1;
+	fresh->linksAdded = 0;
+	fresh->dist = INT_MAX;
 	tmp = ft_strchr(str, ' ');
-	New->name = ft_strndup(str, tmp - str);
-	New->point->x = ft_atoi(tmp);
-	New->point->y = ft_atoi(ft_strchr(tmp + 1, ' '));
-	return (New);
+	fresh->name = ft_strndup(str, tmp - str);
+	fresh->point->x = ft_atoi(tmp);
+	fresh->point->y = ft_atoi(ft_strchr(tmp + 1, ' '));
+	return (fresh);
 }
 
-void	delAdress(void *obj, size_t size)
+void			del_str_adress(void *obj, size_t size)
 {
 	char *tmp;
 
@@ -42,24 +42,30 @@ void	delAdress(void *obj, size_t size)
 	obj = NULL;
 }
 
-t_list	*parce(t_list **pipes, t_graph *pGraph)
+t_list			*parce(t_list *input_list, t_graph *graph)
 {
-	int 	room;
+	int		room;
 	char	*tmp;
 	t_list	*crawler;
 
 	room = 1;
-	crawler = (*pipes)->next;
-	pGraph->totalAnts = ft_atoi(*(char **)((*pipes)->content));
-//	ft_lstdelone(pipes, delAdress);
+	graph->totalAnts = ft_atoi(*(char **)(input_list->content));
+	crawler = input_list->next;
 	while (!ft_strchr(tmp = *(char **)(crawler->content), '-'))
 	{
 		if (!ft_strcmp(tmp, "##start") && (crawler = crawler->next))
-			pGraph->array[0] = newVertex(*(char **)(crawler->content));
+		{
+			if (!(graph->array[0] = new_vertex(*(char **)(crawler->content))))
+				ERROR;
+		}
 		else if (!ft_strcmp(tmp, "##end") && (crawler = crawler->next))
-			pGraph->array[pGraph->V - 1] = newVertex(*(char **)(crawler->content));
+		{
+			if (!(graph->array[graph->V - 1] = new_vertex(*(char **)(crawler->content))))
+				ERROR;
+		}
 		else if (ft_strchr(tmp, ' ') && *tmp != '#')
-			pGraph->array[room++] = newVertex(tmp);
+			if (!(graph->array[room++] = new_vertex(tmp)))
+				ERROR;
 		crawler = crawler->next;
 	}
 	return (crawler);
