@@ -14,11 +14,12 @@
 
 static void	print_move(t_graph *graph, int dest_vert)
 {
-	if (dest_vert == graph->v - 1)
-		ft_printf("\033[38;05;%dm", 1);
+	if (g_color)
+		ft_printf("\033[38;05;%dm", graph->array[dest_vert]->ants % 14 + 1);
 	ft_printf("L%03d-%s ", graph->array[dest_vert]->ants,
 			graph->array[dest_vert]->name);
-	ft_printf("\033[m");
+	if (g_color)
+		ft_printf("\033[m");
 }
 
 static void	one_path(t_path *curr_way, t_graph *graph, bool open_start)
@@ -63,6 +64,8 @@ static int	count_iteration(t_list *all_path, t_graph *graph, int *size)
 	{
 		(*size)++;
 		prev = *(t_path **)all_path->content;
+		if (prev->size == 1)
+			return (1);
 		min_moves = (float)(graph->total_ants + diff + prev->size - 1) / *size;
 		diff += (prev->size - 1);
 		all_path = all_path->next;

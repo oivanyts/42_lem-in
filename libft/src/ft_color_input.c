@@ -25,7 +25,7 @@ void	ft_color_input(char *color)
 	n = 0;
 	while (!ft_strnstr(color, g_colortab[n], ft_strlen(g_colortab[n])))
 		n++;
-	if (n < 9 && (a[1] = n + '0'))
+	if (n < 8 && (a[1] = n + '0'))
 		write(1, &a, 2);
 	else
 		write(1, "0", 1);

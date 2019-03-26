@@ -18,10 +18,10 @@ static int	best_link(int current, t_graph *graph, int dist)
 	int min;
 	int best_next;
 
-	i = graph->array[current]->links;
+	i = 0;
 	best_next = graph->array[current]->link_v[0];
 	min = graph->array[best_next]->dist;
-	while (i--)
+	while (i < graph->array[current]->links)
 	{
 		if (current != graph->array[current]->link_v[i] &&
 			graph->array[graph->array[current]->link_v[i]]->dist == dist)
@@ -29,6 +29,7 @@ static int	best_link(int current, t_graph *graph, int dist)
 			best_next = graph->array[current]->link_v[i];
 			min = graph->array[best_next]->dist;
 		}
+		i++;
 	}
 	return (min == INT_MAX ? -1 : best_next);
 }
@@ -73,7 +74,7 @@ static void	set_max_dist(t_graph *graph, bool *visited_v)
 	ft_bzero(visited_v, (size_t)graph->v);
 }
 
-bool		fill_dist(t_graph *graph, bool **closed_v, t_list **all_path)
+static bool	fill_dist(t_graph *graph, bool **closed_v, t_list **all_path)
 {
 	t_coord		c;
 	int			queue[graph->v];
@@ -102,20 +103,7 @@ bool		fill_dist(t_graph *graph, bool **closed_v, t_list **all_path)
 	return (!shortest_path(graph, closed_v, all_path) ? false : true);
 }
 
-void		del_path(void *path, size_t size)
-{
-	t_path *tmp;
-
-	tmp = *(t_path **)path;
-	if (size)
-	{
-		free(tmp->path);
-		free(tmp);
-	}
-	free(path);
-}
-
-bool		bild_and_run(t_graph *graph)
+bool		bild_and_run(t_graph *graph, t_list *input_list)
 {
 	bool		*closed_vert;
 	t_list		*all_path;
@@ -130,10 +118,11 @@ bool		bild_and_run(t_graph *graph)
 		closed_vert[graph->v - 1] = false;
 		closed_vert[0] = false;
 	}
+	ft_memdel((void **)&closed_vert);
 	if (!all_path)
 		return (0);
+	print_input(input_list);
 	run_all_path(all_path, graph);
 	ft_lstdel(&all_path, del_path);
-	ft_memdel((void **)&closed_vert);
 	return (1);
 }

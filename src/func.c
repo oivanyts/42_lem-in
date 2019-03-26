@@ -34,7 +34,7 @@ static bool	count_links(t_list *input_list, t_graph *graph)
 				graph->array[i]->links++;
 			i++;
 		}
-		if (count < 2)
+		if (count != 2 || !ft_strchr(*(char **)crawler->content, '-'))
 			return (false);
 		crawler = crawler->next;
 	}
@@ -105,7 +105,7 @@ bool		link_vertex(t_list *list, t_graph *graph)
 	return (true);
 }
 
-int			clean_before_exit(t_graph **graph, t_list **linked_list)
+int			clean_on_exit(t_graph **graph, t_list **linked_list)
 {
 	ft_lstdel(linked_list, del_str_adress);
 	if (*graph)

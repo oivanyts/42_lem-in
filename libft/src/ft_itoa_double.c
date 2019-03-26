@@ -125,7 +125,7 @@ char					*ft_itoa_double(long double num, t_format fx)
 	if (fx.flag[0] == '-')
 		n = 0;
 	if (fx.flag[2] == ' ' && ((fx.flag[0] == '-' && num > 0. && n++) ||
-							  fx.flag[3] == '0'))
+	fx.flag[3] == '0'))
 		str[0] = ' ';
 	if (num < 0.0 && (num *= -1))
 		fx.flag[1] = '-';

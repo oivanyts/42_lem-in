@@ -12,29 +12,17 @@
 
 #include "lem_in.h"
 
-void			print_input(t_list *p_list)
+static bool		new_graph(int vert, t_graph **graph)
 {
-	t_list	*tmp1;
-
-	tmp1 = p_list;
-	while (tmp1)
+	if (!(*graph = ft_memalloc(sizeof(t_graph))))
+		return (false);
+	(*graph)->v = vert;
+	if (!((*graph)->array = ft_memalloc(sizeof(t_vertex *) * (*graph)->v)))
 	{
-		p_list = p_list->next;
-		ft_printf("%.*s\n", ft_strlen(*(char **)tmp1->content),
-				*(char **)tmp1->content);
-		tmp1 = p_list;
+		ft_memdel((void **)graph);
+		return (false);
 	}
-}
-
-static t_graph	*new_graph(int vert)
-{
-	t_graph	*graph;
-
-	if (!(graph = ft_memalloc(sizeof(t_graph))))
-		return (NULL);
-	graph->v = vert;
-	graph->array = ft_memalloc(sizeof(t_vertex *) * graph->v);
-	return (graph);
+	return (true);
 }
 
 static bool		valid_vert(char *string, t_list **list)
@@ -43,9 +31,10 @@ static bool		valid_vert(char *string, t_list **list)
 	size_t	name_size;
 	void	*tmp;
 
-	if (!*string || *string == ' ')
+	if (!*string || *string == ' '
+	|| !ft_strchr(string, ' ') || !(name_size = ft_strchr(string, ' ') - string)
+	|| *string == 'L')
 		return (false);
-	name_size = ft_strchr(string, ' ') - string;
 	crawler = (*list)->next;
 	while (crawler)
 	{
@@ -62,50 +51,57 @@ static int		read_farm(t_list **input)
 {
 	char	*tmp;
 	int		num_vert;
-	int		start_end[2];
+	int		start_end_link[3];
 
-	num_vert = -1;
-	ft_bzero(start_end, 2 * sizeof(int));
+	num_vert = 0;
+	ft_bzero(start_end_link, 3 * sizeof(int));
 	while (get_next_line(0, &tmp) == 1)
 	{
-		if (!ft_strchr(tmp, '-') && *tmp != '#')
+		if (ft_strchr(tmp, ' ') && *tmp != '#')
 		{
-			num_vert++;
-			if (*input && !valid_vert(tmp, input))
+			if (*input && !valid_vert(tmp, input) && !start_end_link[2])
 			{
-				free(tmp);
-				return (0);
+				break ;
 			}
+			num_vert++;
 		}
 		else if (!ft_strcmp(tmp, "##end"))
-			start_end[0] += 1;
+			start_end_link[0] += 1;
 		else if (!ft_strcmp(tmp, "##start"))
-			start_end[1] += 1;
+			start_end_link[1] += 1;
+		else if (ft_strchr(tmp, '-'))
+			start_end_link[2] += 1;
 		ft_lstaddback(input, ft_lstnew(&tmp, 8));
 	}
 	free(tmp);
-	return (start_end[0] != 1 || start_end[1] != 1 ? 0 : num_vert);
+	return (start_end_link[0] != 1 || start_end_link[1] != 1
+	|| start_end_link[2] < 1 ? 0 : num_vert);
 }
 
-int				main(void)
+int				main(int argc, char **argv)
 {
 	int				count_vert;
+	int 			res_out;
 	t_list			*links;
 	t_list			*input_list;
 	t_graph			*graph;
 
 	input_list = NULL;
-	if (!(count_vert = read_farm(&input_list)))
-		ERROR;
-	if (!(graph = new_graph(count_vert)))
+	res_out = 0;
+	if (argc > 1 && ft_strnstr(argv[1], "--", 2))
+	{
+		g_color = ft_strchr(argv[1], 'c') ? true : false;
+		res_out = ft_strchr(argv[1], 't') ? true : false;
+	}
+	if (!(count_vert = read_farm(&input_list)) ||
+	!(new_graph(count_vert, &graph)) || !check_ants(input_list, graph))
 		ERROR;
 	links = parce(input_list, graph);
 	graph->array[0]->ants = graph->total_ants;
-	if (!link_vertex(links, graph))
+	if (!link_vertex(links, graph) || !bild_and_run(graph, input_list))
 		ERROR;
-	print_input(input_list);
-	if (!bild_and_run(graph))
-		ERROR;
-	ft_printf("result = %d\n", g_result);
-	return (g_result);
+	if (res_out)
+		ft_printf("{cyan}my = %d{red}\ngenerate = %d{eoc}\n", g_result, g_iter);
+	system("leaks -q lem-in");
+	return (0);
 }

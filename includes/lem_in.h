@@ -13,7 +13,7 @@
 #ifndef LEM_IN_H
 # define LEM_IN_H
 
-# define ERROR exit (ft_printf("ERROR\n") && clean_before_exit(&graph, &input_list) && system("leaks -q lemin"))
+# define ERROR exit (ft_printf("ERROR\n") && clean_on_exit(&graph, &input_list) && system("leaks -q lem-in"))
 
 # include "../libft/includes/libftprintf.h"
 # include <stdbool.h>
@@ -48,13 +48,17 @@ typedef struct	s_graph
 	t_vertex	**array;
 }				t_graph;
 
-int				clean_before_exit(t_graph **graph, t_list **linked_list);
+int				g_iter;
 int				g_result;
-bool			bild_and_run(t_graph *graph);
-bool			link_vertex(t_list *list, t_graph *graph);
-bool			fill_dist(t_graph *graph, bool **closed_v, t_list **all_path);
-void			del_str_adress(void *obj, size_t size);
+bool			g_color;
 t_list			*parce(t_list *input_list, t_graph *graph);
+bool			link_vertex(t_list *list, t_graph *graph);
+bool			check_ants(t_list *list, t_graph *graph);
+bool			bild_and_run(t_graph *graph, t_list *input_list);
+void			print_input(t_list *p_list);
 void			run_all_path(t_list *all_path, t_graph *graph);
+void			del_path(void *path, size_t size);
+void			del_str_adress(void *obj, size_t size);
+int				clean_on_exit(t_graph **graph, t_list **linked_list);
 
 #endif

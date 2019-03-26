@@ -21,7 +21,12 @@ LIBFT           := $(LIB_DIR)libft.a
 LIBFT_INC       := $(LIB_DIR)includes/
 LIBFT_FLAGS     := -lft -L $(LIB_DIR)
 
-SRC             += lem-in.c
+SRC             += find_way.c
+SRC             += func.c
+SRC             += func1.c
+SRC             += main.c
+SRC             += parce.c
+SRC             += run_ants.c
 
 CC              := gcc
 
@@ -38,27 +43,28 @@ OBJ 		    := $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
 all: $(NAME)
 
 $(NAME): $(OBJ) $(LIBFT)
-	@gcc $(OBJ) -lft -L libft -o $(NAME)
+	gcc $(OBJ) -lft -L libft -o $(NAME)
 
 $(OBJ): | $(OBJ_DIR)
 
 $(OBJ_DIR):
-	@mkdir $(OBJ_DIR)
+	mkdir $(OBJ_DIR)
 
 $(OBJ_DIR)%.o: %.c
-	@$(CC) -c $< -o $@ $(FLAGS) $(HEADER_FLAGS);
+	$(CC) -c $< -o $@ $(FLAGS) $(HEADER_FLAGS);
 
 $(LIBFT):
-	@echo libft
+	echo libft
+	make -C $(LIB_DIR)
 
 clean:
-	@rm -f $(OBJ)
-	@make clean -C $(LIB_DIR)
+	rm -f $(OBJ)
+	make clean -C $(LIB_DIR)
 
 fclean: clean
-	@rm -f $(NAME)
-	@rm -rf $(OBJ_DIR)
-	@make fclean -C $(LIB_DIR)
+	rm -f $(NAME)
+	rm -rf $(OBJ_DIR)
+	make fclean -C $(LIB_DIR)
 
 re: fclean all
 

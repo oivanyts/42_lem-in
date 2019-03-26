@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
-project(lemin LANGUAGES C)
+project(lem-in LANGUAGES C)
 #set(CMAKE_C_COMPILER clang)
 
 set(CMAKE_C_STANDARD 99)
@@ -9,9 +9,9 @@ add_subdirectory(./libft)
 
 AUX_SOURCE_DIRECTORY(./src SOURCE_FILES)
 
-add_executable(lemin ${SOURCE_FILES})
+add_executable(lem-in ${SOURCE_FILES})
 
-target_include_directories(lemin PUBLIC ./includes)
+target_include_directories(lem-in PUBLIC ./includes)
 
-target_link_libraries(lemin LIBFT)
+target_link_libraries(lem-in LIBFT)
 

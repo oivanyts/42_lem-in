@@ -12,59 +12,94 @@
 
 #include "lem_in.h"
 
-static t_vertex	*new_vertex(char *str)
+static void	ft_delarray(void **arr)
 {
-	t_vertex	*fresh;
-	char		*tmp;
+	char	**tmp;
+	int		i;
 
-	if (!(fresh = (t_vertex *)malloc(sizeof(t_vertex)))
-	|| !(fresh->point = (t_coord *)malloc(sizeof(t_coord))) || *str == '#'
-	|| *str == ' ')
-		return (NULL);
-	fresh->links = 0;
-	fresh->ants = -1;
-	fresh->links_now = 0;
-	fresh->dist = INT_MAX;
-	tmp = ft_strchr(str, ' ');
-	fresh->name = ft_strndup(str, tmp - str);
-	fresh->point->x = ft_atoi(tmp);
-	fresh->point->y = ft_atoi(ft_strchr(tmp + 1, ' '));
-	return (fresh);
+	tmp = (char **)arr;
+	i = 0;
+	while (tmp[i])
+		free(tmp[i++]);
+	free(tmp);
 }
 
-void			del_str_adress(void *obj, size_t size)
+static bool	alloc_vert(t_vertex **fresh, char *name, int x, int y)
 {
-	char *tmp;
-
-	if (size && (tmp = *(char **)obj))
-		free(tmp);
-	free(obj);
-	obj = NULL;
+	if (!(*fresh = ft_memalloc(sizeof(t_vertex))))
+		return (false);
+	if (!((*fresh)->point = ft_memalloc(sizeof(t_coord))))
+		return (false);
+	(*fresh)->ants = -1;
+	(*fresh)->dist = INT_MAX;
+	(*fresh)->point->x = x;
+	(*fresh)->point->y = y;
+	if (!((*fresh)->name = ft_strdup(name)))
+		return (false);
+	return (true);
 }
 
-t_list			*parce(t_list *input_list, t_graph *graph)
+static bool	new_vertex(char *str, t_vertex **fresh)
+{
+	char 		**arr;
+	int 		cord[2];
+
+	arr = ft_strsplit(str, ' ');
+	if (!arr[0] || !arr[1] || !arr[2] || arr[3])
+	{
+		ft_delarray((void **)arr);
+		return (false);
+	}
+	cord[0] = ft_atoi(arr[1]);
+	cord[1] = ft_atoi(arr[2]);
+	if (arr[3] || ft_strlen(arr[1]) != (size_t)ft_num_size(cord[0])
+	|| ft_strlen(arr[2]) != (size_t)ft_num_size(cord[1])
+	|| !ft_isdigit(arr[1][0]) || !ft_isdigit(arr[2][0]))
+	{
+		ft_delarray((void **)arr);
+		return (false);
+	}
+	if (!(alloc_vert(fresh, arr[0], cord[0], cord[1])))
+	{
+		ft_delarray((void **)arr);
+		return (false);
+	}
+	ft_delarray((void **)arr);
+	return (true);
+}
+
+static void search_result(t_list *link)
+{
+	char	*str;
+
+	str = *(char **)(link->content);
+	if (ft_strstr(str, "#Here is the number of lines required:"))
+		g_iter = ft_atoi(str + 38);
+}
+
+t_list		*parce(t_list *input_list, t_graph *graph)
 {
 	int		room;
 	char	*tmp;
 	t_list	*crawler;
 
 	room = 1;
-	graph->total_ants = ft_atoi(*(char **)(input_list->content));
-	crawler = input_list->next;
+	search_result(crawler = input_list->next);
 	while (!ft_strchr(tmp = *(char **)(crawler->content), '-'))
 	{
 		if (!ft_strcmp(tmp, "##start") && (crawler = crawler->next))
 		{
-			if (!(graph->array[0] = new_vertex(*(char **)(crawler->content))))
+			if (!(new_vertex(*(char **)(crawler->content), &graph->array[0])))
 				ERROR;
 		}
 		else if (!ft_strcmp(tmp, "##end") && (crawler = crawler->next))
 		{
-			if (!(graph->array[graph->v - 1] = new_vertex(*(char **)(crawler->content))))
+			if (!(new_vertex(*(char **)(crawler->content),
+					&graph->array[graph->v - 1])))
 				ERROR;
 		}
 		else if (ft_strchr(tmp, ' ') && *tmp != '#')
-			if (!(graph->array[room++] = new_vertex(tmp)))
+			if (!(new_vertex(tmp, &graph->array[room++])))
 				ERROR;
 		crawler = crawler->next;
 	}
