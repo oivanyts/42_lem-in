@@ -23,8 +23,8 @@ bool		check_ants(t_list *list, t_graph *graph)
 	while (string[i])
 		if (!ft_isdigit(string[i++]))
 			return (false);
-	if (!graph->total_ants
-		|| ft_num_size(graph->total_ants) != (int)ft_strlen(string))
+	if (graph->total_ants < 1 ||
+	ft_num_size(graph->total_ants) != (int)ft_strlen(string))
 		return (false);
 	return (true);
 }
@@ -47,14 +47,14 @@ void		print_input(t_list *p_list)
 	t_list	*tmp1;
 
 	tmp1 = p_list;
-	ft_printf("\n");
 	while (tmp1)
 	{
 		p_list = p_list->next;
 		ft_printf("%.*s\n", ft_strlen(*(char **)tmp1->content),
-				  *(char **)tmp1->content);
+				*(char **)tmp1->content);
 		tmp1 = p_list;
 	}
+	ft_printf("\n");
 }
 
 void		del_str_adress(void *obj, size_t size)

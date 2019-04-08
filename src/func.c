@@ -12,31 +12,31 @@
 
 #include "lem_in.h"
 
-static bool	count_links(t_list *input_list, t_graph *graph)
+static bool	count_links(t_list *in_lst, t_graph *graph)
 {
-	t_list	*crawler;
 	int		i;
 	int		count;
+	char	**arr;
 
-	crawler = input_list;
-	while (crawler)
+	while (in_lst && (i = graph->v))
 	{
-		if (!(i = 0) && **(char **)crawler->content == '#')
-		{
-			crawler = crawler->next;
+		if (**(char **)in_lst->content == '#' && (in_lst = in_lst->next) >= 0)
 			continue ;
-		}
 		count = 0;
-		while (i < graph->v)
+		if (!(arr = ft_strsplit(*(char **)in_lst->content, '-')) || !arr[0] ||
+		!arr[1] || arr[2] || ft_strlen(arr[0]) + ft_strlen(arr[1]) + 1 !=
+		ft_strlen(*(char **)in_lst->content))
 		{
-			if (ft_strstr(*(char **)crawler->content, graph->array[i]->name)
-			&& ++count)
-				graph->array[i]->links++;
-			i++;
-		}
-		if (count != 2 || !ft_strchr(*(char **)crawler->content, '-'))
+			ft_delarray((void **)arr);
 			return (false);
-		crawler = crawler->next;
+		}
+		while (i--)
+			if ((ft_strequ(arr[0], graph->array[i]->name)
+			|| ft_strequ(arr[1], graph->array[i]->name)) && ++count)
+				graph->array[i]->links++;
+		ft_delarray((void **)arr);
+		if ((in_lst = in_lst->next) && count != 2)
+			return (false);
 	}
 	return (true);
 }

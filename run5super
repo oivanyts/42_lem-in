@@ -1,0 +1,15 @@
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+printf "generating big-superpos$\n"
+for ((i = 0; i < 10; i++))
+do
+if (./generator.uu --big-superposition | ./cmake-build-debug/lemin --t)
+then
+	printf "${RED}FAIL${NC} "
+else
+	printf "${GREEN}DONE${NC} "
+fi
+done
+printf "\n"

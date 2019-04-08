@@ -12,7 +12,7 @@
 
 #include "lem_in.h"
 
-static void	ft_delarray(void **arr)
+void		ft_delarray(void **arr)
 {
 	char	**tmp;
 	int		i;
@@ -30,7 +30,6 @@ static bool	alloc_vert(t_vertex **fresh, char *name, int x, int y)
 		return (false);
 	if (!((*fresh)->point = ft_memalloc(sizeof(t_coord))))
 		return (false);
-	(*fresh)->ants = -1;
 	(*fresh)->dist = INT_MAX;
 	(*fresh)->point->x = x;
 	(*fresh)->point->y = y;
@@ -41,11 +40,10 @@ static bool	alloc_vert(t_vertex **fresh, char *name, int x, int y)
 
 static bool	new_vertex(char *str, t_vertex **fresh)
 {
-	char 		**arr;
-	int 		cord[2];
+	char	**arr;
+	int		cord[2];
 
-	arr = ft_strsplit(str, ' ');
-	if (!arr[0] || !arr[1] || !arr[2] || arr[3])
+	if (!(arr = ft_strsplit(str, ' ')) || !arr[1] || !arr[2] || arr[3])
 	{
 		ft_delarray((void **)arr);
 		return (false);
@@ -59,7 +57,8 @@ static bool	new_vertex(char *str, t_vertex **fresh)
 		ft_delarray((void **)arr);
 		return (false);
 	}
-	if (!(alloc_vert(fresh, arr[0], cord[0], cord[1])))
+	if (ft_strlen(arr[0]) + ft_strlen(arr[1]) + ft_strlen(arr[2]) !=
+	ft_strlen(str) - 2 || !(alloc_vert(fresh, arr[0], cord[0], cord[1])))
 	{
 		ft_delarray((void **)arr);
 		return (false);
@@ -68,7 +67,7 @@ static bool	new_vertex(char *str, t_vertex **fresh)
 	return (true);
 }
 
-static void search_result(t_list *link)
+static void	search_result(t_list *link)
 {
 	char	*str;
 
@@ -90,17 +89,17 @@ t_list		*parce(t_list *input_list, t_graph *graph)
 		if (!ft_strcmp(tmp, "##start") && (crawler = crawler->next))
 		{
 			if (!(new_vertex(*(char **)(crawler->content), &graph->array[0])))
-				ERROR;
+				exit(FREE_EXIT && g_param[2] ? ft_printf("room fail\n") : 1);
 		}
 		else if (!ft_strcmp(tmp, "##end") && (crawler = crawler->next))
 		{
 			if (!(new_vertex(*(char **)(crawler->content),
 					&graph->array[graph->v - 1])))
-				ERROR;
+				exit(FREE_EXIT && g_param[2] ? ft_printf("room fail\n") : 1);
 		}
 		else if (ft_strchr(tmp, ' ') && *tmp != '#')
 			if (!(new_vertex(tmp, &graph->array[room++])))
-				ERROR;
+				exit(FREE_EXIT && g_param[2] ? ft_printf("room fail\n") : 1);
 		crawler = crawler->next;
 	}
 	return (crawler);

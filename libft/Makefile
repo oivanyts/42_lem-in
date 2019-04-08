@@ -64,7 +64,6 @@ $(OBJ_DIR):
 	mkdir $(OBJ_DIR)
 
 $(OBJ_DIR)%.o: %.c
-	@echo $@///
 	$(CC) -c $< -o $@ $(FLAGS) $(HEADER_FLAGS);
 
 $(LIBFT):

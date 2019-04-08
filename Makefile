@@ -42,19 +42,18 @@ OBJ 		    := $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
 
 all: $(NAME)
 
-$(NAME): $(OBJ) $(LIBFT)
+$(NAME): $(LIBFT) $(OBJ)
 	gcc $(OBJ) -lft -L libft -o $(NAME)
 
 $(OBJ): | $(OBJ_DIR)
 
 $(OBJ_DIR):
-	mkdir $(OBJ_DIR)
+	@mkdir $(OBJ_DIR)
 
-$(OBJ_DIR)%.o: %.c
+$(OBJ_DIR)%.o: %.c $(INC_DIR)lem_in.h
 	$(CC) -c $< -o $@ $(FLAGS) $(HEADER_FLAGS);
 
 $(LIBFT):
-	echo libft
 	make -C $(LIB_DIR)
 
 clean:

@@ -6,7 +6,7 @@
 /*   By: oivanyts <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/02 17:32:09 by oivanyts          #+#    #+#             */
-/*   Updated: 2018/11/06 12:39:48 by oivanyts         ###   ########.fr       */
+/*   Updated: 2019/03/27 02:19:23 by oivanyts         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,4 +139,3 @@ char					*ft_itoa_double(long double num, t_format fx)
 	+ n], fx.precs, INT_MIN * (fx.type != 'e') + (len) * (fx.type == 'e'));
 	return (str);
 }
-
