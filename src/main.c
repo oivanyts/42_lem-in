@@ -67,7 +67,7 @@ static int		read_farm(t_list **input)
 			start_end_link[0] += 1;
 		else if (!ft_strcmp(tmp, "##start"))
 			start_end_link[1] += 1;
-		else if (ft_strchr(tmp, '-'))
+		else if (ft_strchr(tmp, '-') && *tmp != '#')
 			start_end_link[2] += 1;
 		ft_lstaddback(input, ft_lstnew(&tmp, 8));
 	}
@@ -120,6 +120,5 @@ int				main(int argc, char **argv)
 		exit(FREE_EXIT && (g_param[2] ? ft_printf("linking fail\n") : 1));
 	if (g_param[1])
 		ft_printf("{cyan}\nlem-in:\t%d\nbest:\t%d{eoc}\n", g_result, g_iter);
-	system("leaks -q lem-in");
 	return (0);
 }

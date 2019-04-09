@@ -12,7 +12,7 @@
 
 #include "lem_in.h"
 
-void		ft_delarray(void **arr)
+bool		ft_delarray(void **arr)
 {
 	char	**tmp;
 	int		i;
@@ -22,6 +22,7 @@ void		ft_delarray(void **arr)
 	while (tmp[i])
 		free(tmp[i++]);
 	free(tmp);
+	return (true);
 }
 
 static bool	alloc_vert(t_vertex **fresh, char *name, int x, int y)
@@ -43,26 +44,18 @@ static bool	new_vertex(char *str, t_vertex **fresh)
 	char	**arr;
 	int		cord[2];
 
-	if (!(arr = ft_strsplit(str, ' ')) || !arr[1] || !arr[2] || arr[3])
-	{
-		ft_delarray((void **)arr);
-		return (false);
-	}
+	if (!(arr = ft_strsplit(str, ' ')) || !arr[1] || !arr[2] || arr[3] ||
+	*arr[0] == '#')
+		ERR_VERT;
 	cord[0] = ft_atoi(arr[1]);
 	cord[1] = ft_atoi(arr[2]);
 	if (arr[3] || ft_strlen(arr[1]) != (size_t)ft_num_size(cord[0])
 	|| ft_strlen(arr[2]) != (size_t)ft_num_size(cord[1])
 	|| !ft_isdigit(arr[1][0]) || !ft_isdigit(arr[2][0]))
-	{
-		ft_delarray((void **)arr);
-		return (false);
-	}
+		ERR_VERT;
 	if (ft_strlen(arr[0]) + ft_strlen(arr[1]) + ft_strlen(arr[2]) !=
 	ft_strlen(str) - 2 || !(alloc_vert(fresh, arr[0], cord[0], cord[1])))
-	{
-		ft_delarray((void **)arr);
-		return (false);
-	}
+		ERR_VERT;
 	ft_delarray((void **)arr);
 	return (true);
 }
@@ -84,7 +77,7 @@ t_list		*parce(t_list *input_list, t_graph *graph)
 
 	room = 1;
 	search_result(crawler = input_list->next);
-	while (!ft_strchr(tmp = *(char **)(crawler->content), '-'))
+	while (!(ft_strchr(tmp = *(char **)(crawler->content), '-') && *tmp != '#'))
 	{
 		if (!ft_strcmp(tmp, "##start") && (crawler = crawler->next))
 		{

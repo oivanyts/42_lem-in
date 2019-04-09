@@ -34,9 +34,9 @@ static bool	count_links(t_list *in_lst, t_graph *graph)
 			if ((ft_strequ(arr[0], graph->array[i]->name)
 			|| ft_strequ(arr[1], graph->array[i]->name)) && ++count)
 				graph->array[i]->links++;
-		ft_delarray((void **)arr);
-		if ((in_lst = in_lst->next) && count != 2)
+		if (ft_delarray((void **)arr) && count != 2)
 			return (false);
+		in_lst = in_lst->next;
 	}
 	return (true);
 }

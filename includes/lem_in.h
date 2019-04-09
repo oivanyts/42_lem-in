@@ -13,7 +13,8 @@
 #ifndef LEM_IN_H
 # define LEM_IN_H
 
-# define FREE_EXIT ft_printf("ERROR\n") && clean_on_exit(&graph, &input_list) && system("leaks -q lem-in")
+# define FREE_EXIT ft_printf("ERROR\n") && clean_on_exit(&graph, &input_list)
+# define ERR_VERT {ft_delarray((void **)arr);return (false);}
 
 # include "../libft/includes/libftprintf.h"
 # include <stdbool.h>
@@ -51,7 +52,7 @@ typedef struct	s_graph
 int				g_iter;
 int				g_result;
 bool			g_param[4];
-void			ft_delarray(void **arr);
+bool			ft_delarray(void **arr);
 t_list			*parce(t_list *input_list, t_graph *graph);
 bool			link_vertex(t_list *list, t_graph *graph);
 bool			check_ants(t_list *list, t_graph *graph);

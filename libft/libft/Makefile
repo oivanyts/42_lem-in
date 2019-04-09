@@ -103,10 +103,11 @@ $(NAME): $(OBJ)
 $(OBJ): | $(OBJ_DIR)
 
 $(OBJ_DIR):
-	mkdir $(OBJ_DIR)
+	@mkdir $(OBJ_DIR)
 
 $(OBJ_DIR)%.o: %.c 
 	@$(CC) -c $< -o $@ $(FLAGS) $(HEADER_FLAGS)
+	@echo compiling $@;
 
 clean:
 	@rm -f $(OBJ)

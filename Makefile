@@ -43,7 +43,9 @@ OBJ 		    := $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
 all: $(NAME)
 
 $(NAME): $(LIBFT) $(OBJ)
-	gcc $(OBJ) -lft -L libft -o $(NAME)
+	@echo compiling $@;
+	@gcc $(OBJ) -lft -L libft -o $(NAME)
+	@echo "\033[01;48;05;22m DONE \033[m [$(NAME)]"
 
 $(OBJ): | $(OBJ_DIR)
 
@@ -51,19 +53,21 @@ $(OBJ_DIR):
 	@mkdir $(OBJ_DIR)
 
 $(OBJ_DIR)%.o: %.c $(INC_DIR)lem_in.h
-	$(CC) -c $< -o $@ $(FLAGS) $(HEADER_FLAGS);
+	@echo compiling $@;
+	@$(CC) -c $< -o $@ $(FLAGS) $(HEADER_FLAGS);
 
 $(LIBFT):
-	make -C $(LIB_DIR)
+	@make -C $(LIB_DIR)
 
 clean:
-	rm -f $(OBJ)
-	make clean -C $(LIB_DIR)
+	@rm -f $(OBJ)
+	@make clean -C $(LIB_DIR)
 
 fclean: clean
-	rm -f $(NAME)
-	rm -rf $(OBJ_DIR)
-	make fclean -C $(LIB_DIR)
+	@rm -f $(NAME)
+	@rm -rf $(OBJ_DIR)
+	@make fclean -C $(LIB_DIR)
+	@echo "\033[01;48;05;160m fclean succsed \033[m [$(NAME)]"
 
 re: fclean all
 

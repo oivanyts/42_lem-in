@@ -56,15 +56,17 @@ OBJ 		= $(addprefix $(OBJ_DIR), $(FUNCTIONS:.c=.o))
 all: $(NAME)
 
 $(NAME): $(OBJ) $(LIBFT)
-	ar rc $(NAME) $(OBJ) $(LIBFT_OBJ);
+	@ar rc $(NAME) $(OBJ) $(LIBFT_OBJ);
+	@echo "\033[01;48;05;22m DONE \033[m [$(NAME)]"
 
 $(OBJ): | $(OBJ_DIR)
 
 $(OBJ_DIR):
-	mkdir $(OBJ_DIR)
+	@mkdir $(OBJ_DIR)
 
 $(OBJ_DIR)%.o: %.c
-	$(CC) -c $< -o $@ $(FLAGS) $(HEADER_FLAGS);
+	@$(CC) -c $< -o $@ $(FLAGS) $(HEADER_FLAGS);
+	@echo compiling $@;
 
 $(LIBFT):
 	@make -C $(LIBFT_DIR)
@@ -75,8 +77,9 @@ clean:
 
 fclean: clean
 	@rm -f $(NAME)
-	rm -rf $(OBJ_DIR)
+	@rm -rf $(OBJ_DIR)
 	@make fclean -C $(LIBFT_DIR)
+	@echo "\033[01;48;05;160m fclean succsed \033[m [$(NAME)]"
 
 re: fclean all
 
