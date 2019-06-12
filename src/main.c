@@ -120,5 +120,6 @@ int				main(int argc, char **argv)
 		exit(FREE_EXIT && (g_param[2] ? ft_printf("linking fail\n") : 1));
 	if (g_param[1])
 		ft_printf("{cyan}\nlem-in:\t%d\nbest:\t%d{eoc}\n", g_result, g_iter);
+	system("leaks -q lem-in");
 	return (0);
 }

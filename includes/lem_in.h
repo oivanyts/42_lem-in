@@ -13,7 +13,7 @@
 #ifndef LEM_IN_H
 # define LEM_IN_H
 
-# define FREE_EXIT ft_printf("ERROR\n") && clean_on_exit(&graph, &input_list)
+# define FREE_EXIT ft_printf("ERROR\n") && clean_on_exit(&graph, &input_list) && system("leaks -q lem-in")
 # define ERR_VERT {ft_delarray((void **)arr);return (false);}
 
 # include "../libft/includes/libftprintf.h"
